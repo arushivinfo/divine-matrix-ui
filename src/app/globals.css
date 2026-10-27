@@ -1,28 +1,83 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0b0718;
-  --foreground: #ece8f6;
-  --muted: #a39cbc;
-  --surface: #151028;
-  --border: #2a2245;
-  --accent: #d4af37;
-  --accent-soft: #8b5cf6;
+  --paper: #f5f6f8;
+  --ink: #0d1117;
+  --ink-2: #161b24;
+  --ink-3: #262c38;
+  --ink-line: #3a4150;
+  --muted: #5b6472;
+  --muted-2: #8c94a3;
+  --soft: #aeb5c2;
+  --line: #e3e6eb;
+  --cobalt: #2f45ff;
+  --cobalt-2: #8e9bff;
+  --cobalt-soft: #eef0ff;
+  --lime: #d4ff3a;
+  --coral: #ff8a5b;
+  --red: #c9372c;
+  --red-soft: #fff1f0;
+  --green: #047857;
+  --green-soft: #e7f6ef;
+  --amber: #b45309;
+  --amber-soft: #fff4e5;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-ink-line: var(--ink-line);
   --color-muted: var(--muted);
-  --color-surface: var(--surface);
-  --color-border: var(--border);
-  --color-accent: var(--accent);
-  --color-accent-soft: var(--accent-soft);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted-2: var(--muted-2);
+  --color-soft: var(--soft);
+  --color-line: var(--line);
+  --color-cobalt: var(--cobalt);
+  --color-cobalt-2: var(--cobalt-2);
+  --color-cobalt-soft: var(--cobalt-soft);
+  --color-lime: var(--lime);
+  --color-coral: var(--coral);
+  --color-red: var(--red);
+  --color-red-soft: var(--red-soft);
+  --color-green: var(--green);
+  --color-green-soft: var(--green-soft);
+  --color-amber: var(--amber);
+  --color-amber-soft: var(--amber-soft);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-manrope);
+  --font-mono: var(--font-jetbrains);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+@keyframes dm-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.94); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes dm-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(212, 255, 58, 0); }
+  50% { box-shadow: 0 0 0 3px rgba(212, 255, 58, 0.55), 0 0 24px rgba(47, 69, 255, 0.55); }
+}
+@keyframes dm-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(212, 255, 58, 0.6); }
+  60% { box-shadow: 0 0 0 7px rgba(212, 255, 58, 0); }
+}
+@keyframes dm-scan {
+  0% { top: -12%; }
+  100% { top: 112%; }
+}
+@keyframes dm-tick {
+  0% { opacity: 0.25; transform: translateY(-4px); }
+  100% { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }
