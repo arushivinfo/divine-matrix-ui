@@ -53,7 +53,7 @@ export function AppSidebar() {
             New profile
           </Link>
         </div>
-    </nav>
+      </nav>
     </div>
   );
 }
