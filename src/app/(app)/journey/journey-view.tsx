@@ -1,11 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { EngineNotice } from "@/components/engine-notice";
 import { Badge, Card, CardTitle, PageHeader, Skeleton, cx, type Tone } from "@/components/ui";
 import { istDay } from "@/lib/engine/core";
-import { planJourney, type Status, type TravelDirection } from "@/lib/engine/journey";
+import { fetchJourney, useEngine, type CheckStatus as Status, type TravelDirection } from "@/lib/engine-api";
 import { MONTHS_LONG, MONTHS_SHORT, fmtTime } from "@/lib/format";
-import { useChart, useNow } from "@/lib/profile-context";
+import { useNow, useProfiles } from "@/lib/profile-context";
+import { birthInput } from "@/lib/profiles";
 
 const DIRECTIONS: TravelDirection[] = ["NORTH", "EAST", "SOUTH", "WEST"];
 const STATUS: Record<Status, { tone: Tone; label: string }> = {
@@ -17,12 +19,16 @@ const STATUS: Record<Status, { tone: Tone; label: string }> = {
 const title = (d: string) => d.charAt(0) + d.slice(1).toLowerCase();
 
 export function JourneyView() {
-  const { chart } = useChart();
+  const { profile, ready } = useProfiles();
   const now = useNow();
   const [picked, setPicked] = useState<string | null>(null);
   const [direction, setDirection] = useState<TravelDirection>("EAST");
   const day = picked ?? (now ? istDay(now) : null);
-  const plan = useMemo(() => (chart && day ? planJourney(chart, day, direction) : null), [chart, day, direction]);
+  const birth = birthInput(profile);
+  const { data: plan, error, retry } = useEngine(
+    ready && day ? `${birth.dob}|${birth.tob}|${birth.lat}|${birth.lon}|${day}|${direction}` : null,
+    () => fetchJourney(birth, day!, direction),
+  );
 
   const best = plan ? [...plan.months].sort((x, y) => y.score - x.score).slice(0, 2) : [];
 
@@ -63,7 +69,9 @@ export function JourneyView() {
         </div>
       </Card>
 
-      {!plan ? (
+      {error ? (
+        <EngineNotice error={error} onRetry={retry} />
+      ) : !plan ? (
         <Skeleton className="h-[520px]" />
       ) : (
         <>

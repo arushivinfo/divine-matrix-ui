@@ -6,7 +6,7 @@ import { StartForm } from "./start-form";
 export const metadata: Metadata = { title: "Create your matrix" };
 
 const POINTS = [
-  ["M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z", "Calculated privately in your browser"],
+  ["M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z", "Private — used only to build your matrix"],
   ["M12 7v5l3 2M21 12a9 9 0 11-18 0 9 9 0 0118 0z", "Results in under a second"],
   ["M5 12l5 5L20 7", "Save multiple profiles"],
 ];

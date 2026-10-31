@@ -27,7 +27,7 @@ const COMPARE = [
 ];
 
 const STEPS = [
-  ["01", "Add your birth details", "Date, exact time and city. Your data stays in your browser."],
+  ["01", "Add your birth details", "Date, exact time and city. Your details are private and used only to build your matrix."],
   ["02", "We build your matrix", "Precise positions are mapped onto a 4×3 grid of element and mode."],
   ["03", "Watch it move", "Slide through time for live alignments, scores and the best windows."],
 ];
@@ -415,7 +415,7 @@ export default function Home() {
           <h2 className="relative max-w-[720px] font-display text-[clamp(36px,5.4vw,64px)] leading-none font-extrabold tracking-[-0.04em] text-balance">
             Your timing, finally visible.
           </h2>
-          <p className="relative max-w-[460px] text-lg text-ink/75">Build your matrix in under a minute. Free, private, and calculated in your browser.</p>
+          <p className="relative max-w-[460px] text-lg text-ink/75">Build your matrix in under a minute. Free, private, and precise to the arcsecond.</p>
           <Link href="/start" className="relative rounded-full bg-ink px-8 py-4 font-semibold text-white transition-transform hover:-translate-y-0.5">
             Create your matrix
           </Link>

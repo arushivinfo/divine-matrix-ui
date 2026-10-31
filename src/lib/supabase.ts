@@ -5,8 +5,8 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
  * browser; row level security in the database protects each user's data.
  * Environment variables override these for other projects.
  */
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "https://knvrcijahviqsjhywhzm.supabase.co";
-const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "sb_publishable_KYBuImVzLKeqyUOxUayK2w_VNE3iYWv";
+export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "https://knvrcijahviqsjhywhzm.supabase.co";
+export const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "sb_publishable_KYBuImVzLKeqyUOxUayK2w_VNE3iYWv";
 
 let client: SupabaseClient | null = null;
 

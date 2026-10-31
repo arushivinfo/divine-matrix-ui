@@ -1,9 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { EngineNotice } from "@/components/engine-notice";
 import { Badge, Bar, Card, PageHeader, Ring, Skeleton, cx, type Tone } from "@/components/ui";
-import { TEAM_TYPES, compatibility, teamSynergy, type FrictionStatus } from "@/lib/engine/relations";
-import { chartFor, useProfiles } from "@/lib/profile-context";
+import { TEAM_TYPES, fetchCompatibility, fetchTeam, useEngine, type FrictionStatus } from "@/lib/engine-api";
+import { useProfiles } from "@/lib/profile-context";
+import { birthInput, type Profile } from "@/lib/profiles";
 
 const STATUS: Record<FrictionStatus, { tone: Tone; label: string; bar: string }> = {
   harmonious: { tone: "good", label: "In flow", bar: "#2F45FF" },
@@ -25,11 +27,15 @@ export function CompatibilityView() {
   const b = profiles.find((p) => p.id === (bId ?? profiles.find((x) => x.id !== a.id)?.id)) ?? profiles[1];
   const teamIds = team ?? profiles.map((p) => p.id);
 
-  const match = useMemo(() => (ready && a.id !== b.id ? compatibility(chartFor(a), chartFor(b)) : null), [ready, a, b]);
-  const synergy = useMemo(() => {
-    const members = profiles.filter((p) => teamIds.includes(p.id));
-    return ready && members.length >= 2 ? teamSynergy(members.map((p) => ({ name: p.name, chart: chartFor(p) }))) : null;
-  }, [ready, profiles, teamIds]);
+  const members = profiles.filter((p) => teamIds.includes(p.id));
+  const sig = (p: Profile) => `${p.dob}|${p.tob}|${p.cityId}`;
+
+  const pair = useEngine(ready && a.id !== b.id ? `${sig(a)}~${sig(b)}` : null, () => fetchCompatibility(birthInput(a), birthInput(b)));
+  const teamResult = useEngine(ready && members.length >= 2 ? members.map((p) => `${p.name}:${sig(p)}`).join(",") : null, () =>
+    fetchTeam(members.map((p) => ({ name: p.name, birth: birthInput(p) }))),
+  );
+  const match = pair.data;
+  const synergy = teamResult.data;
 
   if (!ready) return <Skeleton className="h-[640px]" />;
 
@@ -69,6 +75,12 @@ export function CompatibilityView() {
               <span className="text-sm leading-normal text-muted">Weighted on Moon (emotions), ascendant (outlook) and Sun (drive) elements.</span>
             </div>
           </div>
+        ) : pair.error ? (
+          <div className="flex-[1_1_280px]">
+            <EngineNotice compact error={pair.error} onRetry={pair.retry} />
+          </div>
+        ) : pair.loading ? (
+          <p className="flex-[1_1_280px] animate-pulse text-sm text-muted">Calculating match…</p>
         ) : (
           <p className="flex-[1_1_280px] text-sm text-muted">Pick two different people to compare.</p>
         )}
@@ -151,6 +163,10 @@ export function CompatibilityView() {
             ))}
           </div>
         </section>
+      ) : teamResult.error ? (
+        <EngineNotice error={teamResult.error} onRetry={teamResult.retry} />
+      ) : teamResult.loading ? (
+        <Skeleton className="h-[360px]" />
       ) : (
         <p className="text-sm text-muted">Select at least two members to analyse the team.</p>
       )}

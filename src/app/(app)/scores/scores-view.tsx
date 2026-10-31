@@ -1,25 +1,30 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { DayPicker } from "@/components/day-picker";
+import { EngineNotice } from "@/components/engine-notice";
 import { Badge, Bar, Card, CardTitle, PageHeader, Ring, Segmented, Skeleton, cx, type Tone } from "@/components/ui";
-import { analyse } from "@/lib/engine/analysis";
 import { PLANET_CODE, PLANET_NAME } from "@/lib/engine/constants";
 import { istDay } from "@/lib/engine/core";
-import type { HourMode, Risk } from "@/lib/engine/insights";
-import { useChart, useNow } from "@/lib/profile-context";
+import { fetchAnalysis, useEngine, type HourMode, type Risk } from "@/lib/engine-api";
+import { useNow, useProfiles } from "@/lib/profile-context";
+import { birthInput } from "@/lib/profiles";
 
 const LEVEL_TONE: Record<string, Tone> = { LOW: "good", MEDIUM: "warn", HIGH: "bad", CRITICAL: "bad" };
 const RISK_TONE: Record<Risk, Tone> = { low: "good", moderate: "warn", high: "bad" };
 
 export function ScoresView() {
-  const { profile, chart } = useChart();
+  const { profile, ready } = useProfiles();
   const now = useNow();
   const [picked, setPicked] = useState<string | null>(null);
   const [mode, setMode] = useState<HourMode>("business");
 
   const day = picked ?? (now ? istDay(now) : null);
-  const a = useMemo(() => (chart && day ? analyse(chart, day, mode) : null), [chart, day, mode]);
+  const birth = birthInput(profile);
+  const { data: a, error, retry } = useEngine(
+    ready && day ? `${birth.dob}|${birth.tob}|${birth.lat}|${birth.lon}|${day}|${mode}` : null,
+    () => fetchAnalysis(birth, day!, mode),
+  );
 
   return (
     <>
@@ -29,7 +34,9 @@ export function ScoresView() {
         tag="KP cusps · Gochar · Vastu"
         actions={day && <DayPicker value={day} onChange={setPicked} />}
       />
-      {!a || !chart ? (
+      {error ? (
+        <EngineNotice error={error} onRetry={retry} />
+      ) : !a ? (
         <Skeleton className="h-[640px]" />
       ) : (
         <>

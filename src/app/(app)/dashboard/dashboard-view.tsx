@@ -1,9 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { EngineNotice } from "@/components/engine-notice";
 import { ProfileSwitcher } from "@/components/profile-switcher";
 import { Badge, Card, CardTitle, ClassicTag, Ring, Segmented, Skeleton, cx } from "@/components/ui";
-import { analyse } from "@/lib/engine/analysis";
 import {
   ALIGNMENT_ADVICE,
   ELEMENTS,
@@ -16,10 +16,13 @@ import {
   RASHI_TO_RC,
   type PlanetId,
 } from "@/lib/engine/constants";
-import { calcHouse, formatDegrees, getRashi, istDay, resolveKP } from "@/lib/engine/core";
+import { calcHouse, dayNoon, findAlignments, formatDegrees, getRashi, istDay, resolveKP, transitFor } from "@/lib/engine/core";
+import { currentPeriod, vimshottari, vimshottariSub } from "@/lib/engine/dasha";
+import { fetchAnalysis, useDebounced, useEngine } from "@/lib/engine-api";
 import { fmtLongDate, fmtMonthYear, greeting } from "@/lib/format";
 import { ALIGNMENT_RING, CHIP, HEAT_INFO, HEAT_LEVELS, heatLevel, heatSwatch } from "@/lib/heat";
 import { useChart, useNow } from "@/lib/profile-context";
+import { birthInput } from "@/lib/profiles";
 
 const ELEMENT_DOT = ["#E5484D", "#B45309", "#2F45FF", "#0E7C66"];
 
@@ -31,9 +34,25 @@ export function DashboardView() {
 
   const today = now ? istDay(now) : null;
   const day = now ? istDay(now, days) : null;
-  const a = useMemo(() => (chart && day ? analyse(chart, day) : null), [chart, day]);
+  // Standard astronomy stays in the browser so the grid and slider are instant.
+  const livePos = useMemo(() => (day ? transitFor(day) : null), [day]);
+  const alignments = useMemo(() => (chart && livePos ? findAlignments(chart.positions, livePos) : []), [chart, livePos]);
+  const chapter = useMemo(() => {
+    if (!chart || !day) return null;
+    const md = currentPeriod(vimshottari(chart), dayNoon(day));
+    return { md, ad: md ? currentPeriod(vimshottariSub(md), dayNoon(day)) : undefined };
+  }, [chart, day]);
 
-  if (!chart || !now || !a || !today) {
+  // Scores come from the private engine; wait until the slider settles before asking.
+  const scoreDay = useDebounced(day);
+  const birth = birthInput(profile);
+  const engine = useEngine(
+    chart && scoreDay ? `${birth.dob}|${birth.tob}|${birth.lat}|${birth.lon}|${scoreDay}` : null,
+    () => fetchAnalysis(birth, scoreDay!),
+  );
+  const scores = engine.data;
+
+  if (!chart || !now || !livePos || !chapter || !today) {
     return (
       <>
         <Skeleton className="h-20" />
@@ -45,18 +64,18 @@ export function DashboardView() {
 
   const lagna = chart.lagna.rashi;
   const natalIn = (rashi: number) => PLANET_IDS.filter((p) => getRashi(chart.positions[p].sid) === rashi);
-  const liveIn = (rashi: number) => (live ? PLANET_IDS.filter((p) => getRashi(a.live[p].sid) === rashi) : []);
-  const alignedRashis = new Set(live ? a.alignments.map((al) => getRashi(chart.positions[al.natal].sid)) : []);
-  const activeSectors = new Set(live ? a.alignments.map((al) => al.natal) : []);
-  const alerts = dedupe(a.alignments).slice(0, 4);
+  const liveIn = (rashi: number) => (live ? PLANET_IDS.filter((p) => getRashi(livePos[p].sid) === rashi) : []);
+  const alignedRashis = new Set(live ? alignments.map((al) => getRashi(chart.positions[al.natal].sid)) : []);
+  const activeSectors = new Set(live ? alignments.map((al) => al.natal) : []);
+  const alerts = dedupe(alignments).slice(0, 4);
   const dayLabel = days === 0 ? "Today" : `${days > 0 ? "+" : "−"}${Math.abs(days)} ${Math.abs(days) === 1 ? "day" : "days"}`;
 
   const rings = [
-    { label: "Overall", value: a.overall.score, color: "#32D583" },
-    { label: "Wealth", value: a.overall.parts[0].value, color: "#7CD4FD" },
-    { label: "Harmony", value: a.overall.parts[1].value, color: "#FFB547" },
-    { label: "Learning", value: a.overall.parts[4].value, color: "#8E9BFF" },
-    { label: "Wellbeing", value: a.overall.parts[5].value, color: "#FF8A5B" },
+    { label: "Overall", value: scores?.overall.score, color: "#32D583" },
+    { label: "Wealth", value: scores?.overall.parts[0].value, color: "#7CD4FD" },
+    { label: "Harmony", value: scores?.overall.parts[1].value, color: "#FFB547" },
+    { label: "Learning", value: scores?.overall.parts[4].value, color: "#8E9BFF" },
+    { label: "Wellbeing", value: scores?.overall.parts[5].value, color: "#FF8A5B" },
   ];
 
   return (
@@ -89,14 +108,17 @@ export function DashboardView() {
         <div className="grid w-full grid-cols-3 gap-4 sm:flex sm:w-auto sm:flex-1 sm:flex-wrap sm:justify-end sm:gap-6">
           {rings.map((r) => (
             <div key={r.label} className="flex flex-col items-center gap-1.5 sm:flex-row sm:gap-2.5">
-              <Ring value={r.value} color={r.color} label={`${r.label} ${r.value} of 100`}>
-                <span className="font-mono text-[15px] font-semibold">{r.value}</span>
+              <Ring value={r.value ?? 0} color={r.color} label={r.value === undefined ? `${r.label} loading` : `${r.label} ${r.value} of 100`}>
+                <span className={cx("font-mono text-[15px] font-semibold", r.value === undefined && "animate-pulse text-muted-2")}>
+                  {r.value ?? "··"}
+                </span>
               </Ring>
               <span className="text-sm font-semibold">{r.label}</span>
             </div>
           ))}
         </div>
       </section>
+      {engine.error && <EngineNotice compact error={engine.error} onRetry={engine.retry} />}
 
       <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
         <div className="flex flex-col gap-1.5 rounded-[20px] bg-contrast px-6 py-5 text-paper">
@@ -108,14 +130,19 @@ export function DashboardView() {
           </span>
           <span className="font-mono text-[13px] text-soft">{formatDegrees(chart.lagna.sid)} · Whole-sign houses</span>
         </div>
-        <Stat label="Overall score" value={`${a.overall.score} / 100`} note={a.overall.verdict} tone="text-green" />
+        <Stat label="Overall score" value={scores ? `${scores.overall.score} / 100` : "…"} note={scores?.overall.verdict ?? "Calculating"} tone="text-green" />
         <Stat
           label="Current chapter"
-          value={a.md ? `${a.md.label}${a.ad ? " · " + a.ad.label : ""}` : "—"}
-          note={a.ad ? `Until ${fmtMonthYear(a.ad.end)}` : ""}
+          value={chapter.md ? `${chapter.md.label}${chapter.ad ? " · " + chapter.ad.label : ""}` : "—"}
+          note={chapter.ad ? `Until ${fmtMonthYear(chapter.ad.end)}` : ""}
           tone="text-muted"
         />
-        <Stat label="Best business window" value={`${a.hours.window.from} – ${a.hours.window.to}`} note="Hora-based" tone="text-link" />
+        <Stat
+          label="Best business window"
+          value={scores ? `${scores.hours.window.from} – ${scores.hours.window.to}` : "…"}
+          note="Hora-based"
+          tone="text-link"
+        />
       </div>
 
       <div className="flex flex-wrap items-start gap-6">
