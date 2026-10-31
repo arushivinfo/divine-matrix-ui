@@ -49,7 +49,7 @@ export function AppSidebar() {
         <div className="mt-auto hidden flex-col gap-2.5 rounded-2xl border border-ink-3 bg-ink-2 p-4 lg:flex">
           <span className="text-sm font-semibold text-paper">Add another profile</span>
           <span className="text-[13px] leading-normal text-soft">Track family, partners or your team.</span>
-          <Link href="/start" className="self-start rounded-full bg-lime px-3.5 py-2.5 text-[13px] font-semibold text-ink">
+          <Link href="/start" className="self-start rounded-full bg-signal px-3.5 py-2.5 text-[13px] font-semibold text-ink">
             New profile
           </Link>
         </div>

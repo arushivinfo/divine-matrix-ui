@@ -11,10 +11,10 @@ import { useNow, useProfiles } from "@/lib/profile-context";
 import { cityById } from "@/lib/profiles";
 
 const QUALITY: Record<HourQuality, { bar: string; label: string; meaning: string }> = {
-  best: { bar: "bg-lime", label: "Excellent", meaning: "The strongest kind of hour — start what matters." },
-  good: { bar: "bg-cobalt", label: "Good", meaning: "Favourable for work, money and new starts." },
+  best: { bar: "bg-signal", label: "Excellent", meaning: "The strongest kind of hour — start what matters." },
+  good: { bar: "bg-[#7CE7AC]", label: "Good", meaning: "Favourable for work, money and new starts." },
   neutral: { bar: "bg-ink-line", label: "Neutral", meaning: "Fine for routine work and travel." },
-  bad: { bar: "bg-coral", label: "Avoid", meaning: "Avoid starting important things." },
+  bad: { bar: "bg-[#B42318]", label: "Avoid", meaning: "Avoid starting important things." },
 };
 
 const scoreTone = (s: number): Tone => (s >= 70 ? "good" : s >= 50 ? "warn" : "bad");
@@ -61,8 +61,8 @@ export function TodayView() {
       <section className="flex flex-col gap-5 rounded-3xl bg-ink p-7 text-paper">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div className="flex flex-col gap-1.5">
-            <span className="flex items-center gap-2 font-mono text-xs tracking-[0.12em] text-lime uppercase">
-              {isToday && <span className="size-2 rounded-full bg-lime" style={{ animation: "dm-pulse 1.8s ease-out infinite" }} />}
+            <span className="flex items-center gap-2 font-mono text-xs tracking-[0.12em] text-signal uppercase">
+              {isToday && <span className="size-2 rounded-full bg-signal" style={{ animation: "dm-pulse 1.8s ease-out infinite" }} />}
               {current ? `Right now · ${fmtTime(now)}` : "Best hour of the day"}
             </span>
             <span className="font-display text-[34px] font-extrabold tracking-tight">
@@ -111,8 +111,8 @@ export function TodayView() {
           label="Golden window · Abhijit"
           time={p.abhijit ? `${fmtTime(p.abhijit.start)} – ${fmtTime(p.abhijit.end)}` : "—"}
           note="The strongest 48 minutes of the day for anything important."
-          className="border-[#D9F08A] bg-[#F7FFDB]"
-          tone="text-[#3F5200]"
+          className="border-[#ABEFC6] bg-[#ECFDF3]"
+          tone="text-[#067647]"
         />
         <Window
           label="Caution window · Rahu Kaal"

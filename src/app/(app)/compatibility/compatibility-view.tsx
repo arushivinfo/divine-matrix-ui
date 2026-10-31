@@ -11,7 +11,7 @@ const STATUS: Record<FrictionStatus, { tone: Tone; label: string; bar: string }>
   neutral: { tone: "warn", label: "Some friction", bar: "#B45309" },
   clash: { tone: "bad", label: "Clash", bar: "#C9372C" },
 };
-const ELEMENT_COLOR = { Fire: "#FF8A5B", Earth: "#D4FF3A", Air: "#8E9BFF", Water: "#5FD3B5" };
+const ELEMENT_COLOR = { Fire: "#FF8A5B", Earth: "#32D583", Air: "#8E9BFF", Water: "#7CD4FD" };
 
 const selectClass = "h-13 rounded-2xl border border-[#D5D9E0] bg-white px-3.5 text-[15px] text-ink";
 
@@ -108,7 +108,7 @@ export function CompatibilityView() {
                 on ? "border-ink bg-ink text-white" : "border-[#D5D9E0] bg-white",
               )}
             >
-              <input type="checkbox" checked={on} onChange={() => toggle(p.id)} className="accent-lime" />
+              <input type="checkbox" checked={on} onChange={() => toggle(p.id)} className="accent-signal" />
               {p.name}
             </label>
           );
@@ -118,7 +118,7 @@ export function CompatibilityView() {
       {synergy ? (
         <section className="flex flex-wrap gap-8 rounded-3xl bg-ink p-7 text-paper">
           <div className="flex min-w-0 flex-[1_1_320px] flex-col gap-4">
-            <span className="font-mono text-xs tracking-[0.12em] text-lime uppercase">Team type</span>
+            <span className="font-mono text-xs tracking-[0.12em] text-signal uppercase">Team type</span>
             <span className="font-display text-3xl font-extrabold">{TEAM_TYPES[synergy.type].name}</span>
             <span className="text-[15px] leading-relaxed text-soft">
               Strength: {TEAM_TYPES[synergy.type].strength}. Risk: {TEAM_TYPES[synergy.type].risk}.
@@ -146,7 +146,7 @@ export function CompatibilityView() {
                   <span className="font-semibold">{m.name}</span>
                 </span>
                 <span className="text-xs text-muted-2">Leads with {m.dominant}</span>
-                <span className="text-sm font-semibold text-lime">{m.role}</span>
+                <span className="text-sm font-semibold text-signal">{m.role}</span>
               </div>
             ))}
           </div>

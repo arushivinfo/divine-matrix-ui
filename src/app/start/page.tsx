@@ -24,7 +24,7 @@ export default function StartPage() {
         <ul className="flex flex-col gap-3.5 text-[15px] text-[#C9CED8]">
           {POINTS.map(([icon, text]) => (
             <li key={text} className="flex items-center gap-3">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D4FF3A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#32D583" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d={icon} />
               </svg>
               {text}

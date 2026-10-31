@@ -64,23 +64,23 @@ export default function Home() {
             <a href="#how" className="hidden text-[#C9CED8] hover:text-white sm:inline">How it works</a>
             <a href="#pricing" className="hidden text-[#C9CED8] hover:text-white sm:inline">Pricing</a>
             <Link href="/dashboard" className="text-[#C9CED8] hover:text-white">Sign in</Link>
-            <Link href="/start" className="rounded-full bg-lime px-5 py-3 font-semibold text-ink">Create your matrix</Link>
+            <Link href="/start" className="rounded-full bg-signal px-5 py-3 font-semibold text-ink">Create your matrix</Link>
           </nav>
         </header>
 
         <section className="mx-auto flex max-w-[1200px] flex-wrap items-center gap-16 px-6 pt-[72px] pb-24">
           <div className="flex min-w-0 flex-[1_1_480px] flex-col gap-6">
-            <span className="self-start rounded-full border border-ink-line px-3.5 py-1.5 font-mono text-xs tracking-[0.12em] text-lime uppercase">
+            <span className="self-start rounded-full border border-ink-line px-3.5 py-1.5 font-mono text-xs tracking-[0.12em] text-signal uppercase">
               Modern cosmic life optimization engine
             </span>
             <h1 className="font-display text-[clamp(44px,6vw,76px)] leading-[1.02] font-extrabold tracking-[-0.035em]">
-              Know <span className="text-lime">when</span>,<br />not just what.
+              Know <span className="text-signal">when</span>,<br />not just what.
             </h1>
             <p className="max-w-[460px] text-[19px] leading-relaxed text-soft">
               Meet your digital cosmic assistant. Know exactly when to act, when to hold, and how to master your day.
             </p>
             <div className="mt-2 flex flex-wrap gap-3">
-              <Link href="/start" className="rounded-full bg-cobalt px-7 py-4 font-semibold text-white">Start free</Link>
+              <Link href="/start" className="rounded-full bg-signal px-7 py-4 font-semibold text-ink">Start free</Link>
               <Link href="/dashboard" className="rounded-full border border-ink-line px-7 py-4 font-semibold text-paper">
                 See a sample dashboard
               </Link>
@@ -99,7 +99,7 @@ export default function Home() {
               {["Lahiri Ayanamsa", "KP 249", "Panchadha Maitri", "Sub-arcsecond astronomy"].map((t, i, all) => (
                 <span key={t} className="flex items-center gap-5">
                   {t}
-                  {i < all.length - 1 && <span aria-hidden="true" className="text-lime">•</span>}
+                  {i < all.length - 1 && <span aria-hidden="true" className="text-signal">•</span>}
                 </span>
               ))}
             </div>
@@ -133,10 +133,10 @@ export default function Home() {
             ))}
           </div>
           <div className="flex flex-col gap-4.5 rounded-[28px] bg-ink p-8 text-paper">
-            <span className="font-display text-xl font-bold text-lime">Divine Matrix</span>
+            <span className="font-display text-xl font-bold text-signal">Divine Matrix</span>
             {COMPARE.map(([, neu]) => (
               <div key={neu} className="flex items-center gap-3 border-b border-ink-3 pb-3.5">
-                <Check color="#D4FF3A" />
+                <Check color="#32D583" />
                 {neu}
               </div>
             ))}
@@ -160,7 +160,7 @@ export default function Home() {
         <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-5">
           {STEPS.map(([n, title, body]) => (
             <div key={n} className="flex flex-col gap-3.5 rounded-3xl border border-line bg-white p-8">
-              <span className="flex size-10 items-center justify-center rounded-xl bg-lime font-mono text-sm font-semibold">{n}</span>
+              <span className="flex size-10 items-center justify-center rounded-xl bg-signal font-mono text-sm font-semibold">{n}</span>
               <h3 className="font-display text-[22px] font-bold">{title}</h3>
               <p className="leading-relaxed text-muted">{body}</p>
             </div>
@@ -208,7 +208,7 @@ export default function Home() {
             >
               <div className="flex items-center justify-between">
                 <h3 className="font-display text-[22px] font-bold">{p.name}</h3>
-                {p.featured && <span className="rounded-full bg-lime px-3 py-1.5 text-xs font-semibold text-ink">Most popular</span>}
+                {p.featured && <span className="rounded-full bg-signal px-3 py-1.5 text-xs font-semibold text-ink">Most popular</span>}
               </div>
               <div className="flex items-baseline gap-1.5">
                 <span className="font-display text-[44px] font-extrabold tracking-[-0.03em]">{p.price}</span>
@@ -217,14 +217,14 @@ export default function Home() {
               <ul className="flex flex-1 flex-col gap-3 text-[15px]">
                 {p.items.map((it) => (
                   <li key={it} className="flex items-start gap-2.5">
-                    <Check color={p.featured ? "#D4FF3A" : "#2F45FF"} />
+                    <Check color={p.featured ? "#32D583" : "#2F45FF"} />
                     {it}
                   </li>
                 ))}
               </ul>
               <Link
                 href="/start"
-                className={`rounded-full px-5 py-3.5 text-center font-semibold ${p.featured ? "bg-lime text-ink" : "bg-ink text-white"}`}
+                className={`rounded-full px-5 py-3.5 text-center font-semibold ${p.featured ? "bg-signal text-ink" : "bg-ink text-white"}`}
               >
                 {p.cta}
               </Link>

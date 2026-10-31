@@ -24,7 +24,7 @@ export function ClassicTag({ children, dark }: { children: ReactNode; dark?: boo
     <span
       className={cx(
         "rounded-full px-2.5 py-1 font-mono text-xs font-semibold tracking-wide",
-        dark ? "bg-ink-3 text-lime" : "bg-cobalt-soft text-cobalt",
+        dark ? "bg-ink-3 text-signal" : "bg-cobalt-soft text-cobalt",
       )}
     >
       {children}
@@ -70,7 +70,7 @@ export function Ring({
   value,
   size = 64,
   stroke = 7,
-  color = "#D4FF3A",
+  color = "#32D583",
   track = "#262C38",
   label,
   children,
@@ -121,7 +121,7 @@ const TONES = {
   warn: "bg-amber-soft text-amber",
   bad: "bg-red-soft text-red",
   neutral: "bg-[#F0F2F5] text-muted",
-  lime: "bg-lime text-ink",
+  signal: "bg-signal text-ink",
 } as const;
 export type Tone = keyof typeof TONES;
 
@@ -165,7 +165,7 @@ export function Segmented<T extends string>({
               "min-h-10 flex-1 cursor-pointer rounded-full px-4 text-sm font-semibold whitespace-nowrap transition-colors",
               active
                 ? dark
-                  ? "bg-lime text-ink"
+                  ? "bg-signal text-ink"
                   : "bg-ink text-white"
                 : dark
                   ? "text-soft hover:text-white"

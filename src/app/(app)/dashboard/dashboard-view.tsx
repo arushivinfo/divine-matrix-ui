@@ -18,7 +18,7 @@ import {
 } from "@/lib/engine/constants";
 import { calcHouse, formatDegrees, getRashi, istDay, resolveKP } from "@/lib/engine/core";
 import { fmtLongDate, fmtMonthYear, greeting } from "@/lib/format";
-import { ALIGNMENT_RING, CHIP, HEAT, HEAT_LEVELS, heatLevel } from "@/lib/heat";
+import { ALIGNMENT_RING, CHIP, HEAT_INFO, HEAT_LEVELS, heatLevel, heatSwatch } from "@/lib/heat";
 import { useChart, useNow } from "@/lib/profile-context";
 
 const ELEMENT_DOT = ["#E5484D", "#B45309", "#2F45FF", "#0E7C66"];
@@ -52,8 +52,8 @@ export function DashboardView() {
   const dayLabel = days === 0 ? "Today" : `${days > 0 ? "+" : "−"}${Math.abs(days)} ${Math.abs(days) === 1 ? "day" : "days"}`;
 
   const rings = [
-    { label: "Overall", value: a.overall.score, color: "#D4FF3A" },
-    { label: "Wealth", value: a.overall.parts[0].value, color: "#5FD3B5" },
+    { label: "Overall", value: a.overall.score, color: "#32D583" },
+    { label: "Wealth", value: a.overall.parts[0].value, color: "#7CD4FD" },
     { label: "Harmony", value: a.overall.parts[1].value, color: "#FFB547" },
     { label: "Learning", value: a.overall.parts[4].value, color: "#8E9BFF" },
     { label: "Wellbeing", value: a.overall.parts[5].value, color: "#FF8A5B" },
@@ -101,10 +101,10 @@ export function DashboardView() {
       <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
         <div className="flex flex-col gap-1.5 rounded-[20px] bg-ink px-6 py-5 text-paper">
           <span className="text-[13px] text-soft">
-            Anchor zone <span className="font-mono text-[11px] text-lime">· Lagna</span>
+            Anchor zone <span className="font-mono text-[11px] text-signal">· Lagna</span>
           </span>
           <span className="font-display text-[26px] font-extrabold">
-            {RASHI_EN[lagna]} <span className="text-lime">·</span> {ELEMENTS[lagna % 4]}
+            {RASHI_EN[lagna]} <span className="text-signal">·</span> {ELEMENTS[lagna % 4]}
           </span>
           <span className="font-mono text-[13px] text-soft">{formatDegrees(chart.lagna.sid)} · Whole-sign houses</span>
         </div>
@@ -131,8 +131,8 @@ export function DashboardView() {
             <div className="flex flex-wrap gap-3.5 text-xs text-muted">
               {HEAT_LEVELS.map((lvl) => (
                 <span key={lvl} className="flex items-center gap-1.5">
-                  <span className="size-2.5 rounded-[3px]" style={{ background: HEAT[lvl].bg }} />
-                  {HEAT[lvl].label} {HEAT[lvl].range}
+                  <span className="size-2.5 rounded-[3px]" style={{ background: heatSwatch(lvl).bg }} />
+                  {HEAT_INFO[lvl].label} {HEAT_INFO[lvl].range}
                 </span>
               ))}
             </div>
@@ -155,7 +155,7 @@ export function DashboardView() {
                     const load = chart.sav[rashi];
                     const house = calcHouse(rashi, lagna);
                     const forming = alignedRashis.has(rashi);
-                    const heat = HEAT[heatLevel(load)];
+                    const heat = heatSwatch(heatLevel(load));
                     return (
                       <div
                         key={col}
@@ -175,10 +175,10 @@ export function DashboardView() {
                         </span>
                         <span className="flex flex-wrap gap-1">
                           {natalIn(rashi).map((p) => (
-                            <Chip key={p} code={PLANET_CODE[p]} title={`${PLANET_NAME[p]} at birth`} onGreen={heat.onGreen} />
+                            <Chip key={p} code={PLANET_CODE[p]} title={`${PLANET_NAME[p]} at birth`} />
                           ))}
                           {liveIn(rashi).map((p) => (
-                            <Chip key={`t-${p}`} code={PLANET_CODE[p]} title={`${PLANET_NAME[p]} live`} live onGreen={heat.onGreen} />
+                            <Chip key={`t-${p}`} code={PLANET_CODE[p]} title={`${PLANET_NAME[p]} live`} live />
                           ))}
                         </span>
                       </div>
@@ -194,7 +194,7 @@ export function DashboardView() {
             {live && <span className="flex items-center gap-1.5"><Chip code="Sa" title="" live /> Live position</span>}
             {live && (
               <span className="flex items-center gap-1.5">
-                <span className="size-3.5 rounded border-2 bg-[#2C3539]" style={{ borderColor: ALIGNMENT_RING }} /> Alignment within 5°
+                <span className="size-3.5 rounded border-2 bg-[#E4E7EC]" style={{ borderColor: ALIGNMENT_RING }} /> Alignment within 5°
               </span>
             )}
           </div>
@@ -234,7 +234,7 @@ export function DashboardView() {
               <h2 className="font-display text-xl font-bold">
                 Live alerts <span className="font-mono text-xs font-semibold text-muted-2">· Gochar</span>
               </h2>
-              <Badge tone="lime">{live ? `${alerts.length} active` : "Off"}</Badge>
+              <Badge tone="signal">{live ? `${alerts.length} active` : "Off"}</Badge>
             </div>
             {!live && <p className="text-sm text-soft">Switch to Live overlay to see alignments.</p>}
             {live && alerts.length === 0 && <p className="text-sm text-soft">No live body is within 5° of a birth position on this day.</p>}
@@ -244,7 +244,7 @@ export function DashboardView() {
                   <span
                     className={cx(
                       "self-start rounded-md px-2 py-0.5 font-mono text-[11px] font-semibold tracking-[0.08em] uppercase",
-                      al.exact ? "bg-lime text-ink" : "bg-cobalt text-white",
+                      al.exact ? "bg-signal text-ink" : "bg-cobalt text-white",
                     )}
                   >
                     {al.exact ? "Exact" : "Forming"}
@@ -331,8 +331,8 @@ function Stat({ label, value, note, tone }: { label: string; value: string; note
   );
 }
 
-function Chip({ code, title, live, onGreen }: { code: string; title: string; live?: boolean; onGreen?: boolean }) {
-  const c = live ? (onGreen ? CHIP.liveOnGreen : CHIP.live) : onGreen ? CHIP.natalOnGreen : CHIP.natal;
+function Chip({ code, title, live }: { code: string; title: string; live?: boolean }) {
+  const c = live ? CHIP.live : CHIP.natal;
   return (
     <span
       title={title || undefined}

@@ -10,9 +10,9 @@ export function LogoMark({ size = 28 }: { size?: number }) {
           <rect key={`${x}-${y}`} x={x} y={y} width="5" height="5" rx="1.5" />
         ))}
       </g>
-      <rect x="22.8" y="0" width="5" height="5" rx="1.5" fill="#D4FF3A" />
+      <rect x="22.8" y="0" width="5" height="5" rx="1.5" fill="#32D583" />
       <rect x="7.6" y="8.5" width="5" height="5" rx="1.5" fill="#2F45FF" />
-      <rect x="15.2" y="17" width="5" height="5" rx="1.5" fill="#D4FF3A" />
+      <rect x="15.2" y="17" width="5" height="5" rx="1.5" fill="#32D583" />
     </svg>
   );
 }

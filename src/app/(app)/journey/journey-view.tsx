@@ -71,14 +71,14 @@ export function JourneyView() {
             <div
               className={cx(
                 "flex size-[140px] shrink-0 flex-col items-center justify-center rounded-[32px] text-ink",
-                plan.verdict === "GO" ? "bg-lime" : plan.verdict === "CAUTION" ? "bg-[#FFB547]" : "bg-coral",
+                plan.verdict === "GO" ? "bg-signal" : plan.verdict === "CAUTION" ? "bg-[#FFB547]" : "bg-coral",
               )}
             >
               <span className="font-display text-5xl leading-none font-extrabold">{plan.score}</span>
               <span className="text-[13px] font-semibold">out of 100</span>
             </div>
             <div className="flex min-w-0 flex-[1_1_320px] flex-col gap-2.5">
-              <span className="font-mono text-xs tracking-[0.12em] text-lime uppercase">Verdict · {plan.verdict}</span>
+              <span className="font-mono text-xs tracking-[0.12em] text-signal uppercase">Verdict · {plan.verdict}</span>
               <span className="font-display text-3xl font-extrabold tracking-tight">{plan.headline}</span>
               <span className="text-[15px] leading-relaxed text-soft">
                 {plan.summary}
@@ -106,7 +106,7 @@ export function JourneyView() {
               {plan.months.map((m) => (
                 <div key={`${m.year}-${m.month}`} className="flex h-full flex-col items-center justify-end gap-1.5" title={`${MONTHS_LONG[m.month]} ${m.year}: ${m.score}`}>
                   <div
-                    className={cx("w-full rounded-lg", m.score >= 70 ? "bg-cobalt" : m.score >= 50 ? "bg-[#B9C3FF]" : "bg-line")}
+                    className={cx("w-full rounded-lg", m.score >= 70 ? "bg-[#32D583]" : m.score >= 50 ? "bg-[#A6F4C5]" : "bg-[#E4E7EC]")}
                     style={{ height: `${Math.max(m.score, 6)}%` }}
                   />
                   <span className="font-mono text-[11px] text-muted">{MONTHS_SHORT[m.month]}</span>

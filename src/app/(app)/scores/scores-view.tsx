@@ -136,7 +136,7 @@ export function ScoresView() {
                     title={`${PLANET_NAME[h.lord]} hora`}
                     className={cx(
                       "rounded-md py-1.5 text-center font-mono text-[11px] font-semibold",
-                      h.score >= 3 ? "bg-cobalt text-white" : h.score >= 2 ? "bg-[#C9D0FF] text-ink" : h.score < 0 ? "bg-[#FFD2CE] text-[#8A1F17]" : "bg-paper text-muted",
+                      h.score >= 3 ? "bg-[#32D583] text-[#052E1A]" : h.score >= 2 ? "bg-[#A6F4C5] text-[#053321]" : h.score < 0 ? "bg-[#FEE4E2] text-[#912018]" : "bg-[#F2F4F7] text-muted",
                     )}
                   >
                     {String(h.hour).padStart(2, "0")}
