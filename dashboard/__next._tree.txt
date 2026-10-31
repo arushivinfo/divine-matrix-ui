@@ -1,8 +1,8 @@
-:HL["/divine-matrix-ui/_next/static/chunks/0u_xejl38yy-g.css","style"]
+:HL["/divine-matrix-ui/_next/static/chunks/0sy0krs4ywc08.css","style"]
 :HL["/divine-matrix-ui/_next/static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/divine-matrix-ui/_next/static/media/82450a180bcad83c-s.p.0p-wng2nn8o-p.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HL["/divine-matrix-ui/_next/static/media/9a321a2c78eff0b5-s.p.1bkzbscqrt8rl.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
-:HL["/divine-matrix-ui/_next/static/media/d4b605c61b941c57-s.p.1sj6eobyi31rd.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 3:[["children",{"s":"__PAGE__","h":160}]]
 2:[["children",{"s":"dashboard","h":96,"c":"$Q3"}]]
 1:[["children",{"s":"(app)","h":96,"c":"$Q2"}]]
-0:{"b":"17FdUJELWcxF87N_4qd6M","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
+0:{"b":"K5TJfNef8Sl1vitQTBEuk","t":{"t":{"s":"","h":80,"c":"$Q1"}}}

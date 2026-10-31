@@ -1,4 +1,4 @@
-:HL["/divine-matrix-ui/_next/static/chunks/0u_xejl38yy-g.css","style"]
+:HL["/divine-matrix-ui/_next/static/chunks/0sy0krs4ywc08.css","style"]
 2:[["children",{"s":"__PAGE__","h":160}]]
 1:[["children",{"s":"/_not-found","h":96,"c":"$Q2"}]]
-0:{"b":"17FdUJELWcxF87N_4qd6M","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
+0:{"b":"K5TJfNef8Sl1vitQTBEuk","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
