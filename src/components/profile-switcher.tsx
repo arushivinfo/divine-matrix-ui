@@ -31,7 +31,7 @@ export function ProfileSwitcher() {
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
-        className="flex min-h-12 cursor-pointer items-center gap-2.5 rounded-full border border-line bg-white py-1.5 pr-4 pl-1.5"
+        className="flex min-h-12 cursor-pointer items-center gap-2.5 rounded-full border border-line bg-surface py-1.5 pr-4 pl-1.5"
       >
         <span className="flex size-9 items-center justify-center rounded-full bg-cobalt text-sm font-semibold text-white">
           {profile.name.charAt(0).toUpperCase()}
@@ -42,7 +42,7 @@ export function ProfileSwitcher() {
         </svg>
       </button>
       {open && (
-        <div className="absolute right-0 z-20 mt-2 w-64 rounded-2xl border border-line bg-white p-2 shadow-lg">
+        <div className="absolute right-0 z-20 mt-2 w-64 rounded-2xl border border-line bg-surface p-2 shadow-lg">
           <ul role="listbox" aria-label="Profiles" className="flex flex-col">
             {profiles.map((p) => (
               <li key={p.id} role="option" aria-selected={p.id === profile.id}>
@@ -54,7 +54,7 @@ export function ProfileSwitcher() {
                   }}
                   className={cx(
                     "flex min-h-11 w-full cursor-pointer items-center justify-between rounded-xl px-3 text-left text-sm",
-                    p.id === profile.id ? "bg-cobalt-soft font-semibold text-cobalt" : "hover:bg-paper",
+                    p.id === profile.id ? "bg-cobalt-soft font-semibold text-link" : "hover:bg-subtle",
                   )}
                 >
                   {p.name}
@@ -63,7 +63,7 @@ export function ProfileSwitcher() {
               </li>
             ))}
           </ul>
-          <Link href="/start" className="mt-1 flex min-h-11 items-center rounded-xl px-3 text-sm font-semibold text-cobalt hover:bg-paper">
+          <Link href="/start" className="mt-1 flex min-h-11 items-center rounded-xl px-3 text-sm font-semibold text-link hover:bg-subtle">
             + New profile
           </Link>
         </div>

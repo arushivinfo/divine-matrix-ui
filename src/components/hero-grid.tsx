@@ -20,7 +20,7 @@ export function HeroGrid() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between font-mono text-xs tracking-[0.08em] text-muted-2 uppercase">
+      <div className="flex items-center justify-between font-mono text-xs tracking-[0.08em] text-fg-muted uppercase">
         <span>Energy Grid</span>
         <span className="flex items-center gap-2">
           <span className="size-2 rounded-full bg-signal" style={{ animation: "dm-pulse 1.8s ease-out infinite" }} />
@@ -38,8 +38,8 @@ export function HeroGrid() {
                 key={zone}
                 className="flex min-h-[72px] flex-col justify-between gap-2 rounded-xl p-3"
                 style={{
-                  background: heatSwatch(t, "dark").bg,
-                  color: heatSwatch(t, "dark").fg,
+                  background: heatSwatch(t).bg,
+                  color: heatSwatch(t).fg,
                   transition: "background-color 0.9s ease, color 0.9s ease",
                   animation: t === "peak" ? `${enter}, dm-peak-glow 2.4s ease-in-out ${900 + i * 70}ms infinite` : enter,
                 }}
@@ -58,10 +58,10 @@ export function HeroGrid() {
           style={{ boxShadow: "0 0 14px 2px rgba(50,213,131,.6)", animation: "dm-scan 3.6s linear infinite" }}
         />
       </div>
-      <div className="flex flex-wrap gap-4 text-xs text-soft">
+      <div className="flex flex-wrap gap-4 text-xs text-fg-soft">
         {HEAT_LEVELS.map((lvl) => (
           <span key={lvl} className="flex items-center gap-1.5">
-            <span className="size-2.5 rounded-[3px]" style={{ background: heatSwatch(lvl, "dark").bg }} />
+            <span className="size-2.5 rounded-[3px]" style={{ background: heatSwatch(lvl).bg }} />
             {HEAT_INFO[lvl].label}
           </span>
         ))}

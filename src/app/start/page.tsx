@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Logo } from "@/components/logo";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { StartForm } from "./start-form";
 
 export const metadata: Metadata = { title: "Create your matrix" };
@@ -13,8 +14,11 @@ const POINTS = [
 export default function StartPage() {
   return (
     <div className="flex min-h-screen flex-wrap">
-      <aside className="flex min-w-0 flex-[1_1_420px] flex-col justify-between gap-12 bg-ink p-8 text-paper sm:p-12">
-        <Logo />
+      <aside className="flex min-w-0 flex-[1_1_420px] flex-col justify-between gap-12 bg-contrast p-8 text-paper sm:p-12">
+        <div className="flex items-center justify-between gap-3">
+          <Logo />
+          <ThemeToggle onDark />
+        </div>
         <div className="flex max-w-[440px] flex-col gap-5">
           <h1 className="font-display text-[48px] leading-[1.05] font-extrabold tracking-[-0.03em]">Your map starts with one moment.</h1>
           <p className="text-[17px] leading-relaxed text-soft">

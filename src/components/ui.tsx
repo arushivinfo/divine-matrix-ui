@@ -9,7 +9,7 @@ export function Card({ children, className, dark }: { children: ReactNode; class
     <section
       className={cx(
         "flex flex-col gap-4 rounded-3xl p-6",
-        dark ? "bg-ink text-paper" : "border border-line bg-white",
+        dark ? "bg-contrast text-paper" : "border border-line bg-surface",
         className,
       )}
     >
@@ -24,7 +24,7 @@ export function ClassicTag({ children, dark }: { children: ReactNode; dark?: boo
     <span
       className={cx(
         "rounded-full px-2.5 py-1 font-mono text-xs font-semibold tracking-wide",
-        dark ? "bg-ink-3 text-signal" : "bg-cobalt-soft text-cobalt",
+        dark ? "bg-ink-3 text-signal" : "bg-cobalt-soft text-link",
       )}
     >
       {children}
@@ -33,7 +33,7 @@ export function ClassicTag({ children, dark }: { children: ReactNode; dark?: boo
 }
 
 export function Eyebrow({ children, className }: { children: ReactNode; className?: string }) {
-  return <span className={cx("font-mono text-xs uppercase tracking-[0.12em]", className ?? "text-cobalt")}>{children}</span>;
+  return <span className={cx("font-mono text-xs uppercase tracking-[0.12em]", className ?? "text-link")}>{children}</span>;
 }
 
 export function PageHeader({ kicker, title, tag, actions }: { kicker: ReactNode; title: string; tag?: string; actions?: ReactNode }) {
@@ -88,18 +88,17 @@ export function Ring({
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label={label}>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={track} strokeWidth={stroke} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" strokeWidth={stroke} style={{ stroke: track }} />
         <circle
           cx={size / 2}
           cy={size / 2}
           r={r}
           fill="none"
-          stroke={color}
           strokeWidth={stroke}
           strokeLinecap="round"
           strokeDasharray={`${(c * Math.max(0, Math.min(100, value))) / 100} ${c}`}
           transform={`rotate(-90 ${size / 2} ${size / 2})`}
-          style={{ transition: "stroke-dasharray 0.6s ease" }}
+          style={{ stroke: color, transition: "stroke-dasharray 0.6s ease" }}
         />
       </svg>
       <span className="absolute inset-0 flex flex-col items-center justify-center">{children}</span>
@@ -107,7 +106,7 @@ export function Ring({
   );
 }
 
-export function Bar({ value, color, track = "bg-[#EEF0F3]" }: { value: number; color: string; track?: string }) {
+export function Bar({ value, color, track = "bg-subtle" }: { value: number; color: string; track?: string }) {
   return (
     <div className={cx("h-2.5 overflow-hidden rounded-full", track)}>
       <div className="h-full rounded-full transition-[width] duration-500" style={{ width: `${value}%`, background: color }} />
@@ -117,10 +116,10 @@ export function Bar({ value, color, track = "bg-[#EEF0F3]" }: { value: number; c
 
 const TONES = {
   good: "bg-green-soft text-green",
-  info: "bg-cobalt-soft text-cobalt",
+  info: "bg-cobalt-soft text-link",
   warn: "bg-amber-soft text-amber",
   bad: "bg-red-soft text-red",
-  neutral: "bg-[#F0F2F5] text-muted",
+  neutral: "bg-subtle text-muted",
   signal: "bg-signal text-ink",
 } as const;
 export type Tone = keyof typeof TONES;
@@ -134,7 +133,7 @@ export function Badge({ tone, children, mono }: { tone: Tone; children: ReactNod
 }
 
 export function Skeleton({ className }: { className?: string }) {
-  return <div className={cx("animate-pulse rounded-3xl bg-[#E9ECF1]", className)} />;
+  return <div className={cx("animate-pulse rounded-3xl bg-subtle", className)} />;
 }
 
 /** Segmented control used for view and mode switches. */
@@ -152,7 +151,7 @@ export function Segmented<T extends string>({
   dark?: boolean;
 }) {
   return (
-    <div role="group" aria-label={label} className={cx("flex flex-wrap rounded-full p-1", dark ? "bg-ink-3" : "bg-[#E9ECF1]")}>
+    <div role="group" aria-label={label} className={cx("flex flex-wrap rounded-full p-1", dark ? "bg-ink-3" : "bg-subtle")}>
       {options.map((o) => {
         const active = o.value === value;
         return (
@@ -166,10 +165,10 @@ export function Segmented<T extends string>({
               active
                 ? dark
                   ? "bg-signal text-ink"
-                  : "bg-ink text-white"
+                  : "bg-fg text-bg"
                 : dark
                   ? "text-soft hover:text-white"
-                  : "text-muted hover:text-ink",
+                  : "text-muted hover:text-fg",
             )}
           >
             {o.label}

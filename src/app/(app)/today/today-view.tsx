@@ -58,7 +58,7 @@ export function TodayView() {
   return (
     <>
       {header}
-      <section className="flex flex-col gap-5 rounded-3xl bg-ink p-7 text-paper">
+      <section className="flex flex-col gap-5 rounded-3xl bg-contrast p-7 text-paper">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div className="flex flex-col gap-1.5">
             <span className="flex items-center gap-2 font-mono text-xs tracking-[0.12em] text-signal uppercase">
@@ -111,14 +111,14 @@ export function TodayView() {
           label="Golden window · Abhijit"
           time={p.abhijit ? `${fmtTime(p.abhijit.start)} – ${fmtTime(p.abhijit.end)}` : "—"}
           note="The strongest 48 minutes of the day for anything important."
-          className="border-[#ABEFC6] bg-[#ECFDF3]"
-          tone="text-[#067647]"
+          className="border-green/30 bg-green-soft"
+          tone="text-green"
         />
         <Window
           label="Caution window · Rahu Kaal"
           time={p.rahuKaal ? `${fmtTime(p.rahuKaal.start)} – ${fmtTime(p.rahuKaal.end)}` : "—"}
           note="Avoid starting new things or signing."
-          className="border-[#FFD2CE] bg-red-soft"
+          className="border-red/30 bg-red-soft"
           tone="text-red"
         />
         {(
@@ -128,12 +128,12 @@ export function TodayView() {
             ["Travel", p.scores.travel],
           ] as const
         ).map(([label, score]) => (
-          <div key={label} className="flex flex-col gap-2 rounded-[20px] border border-line bg-white p-5">
-            <span className="flex items-center justify-between text-sm font-semibold text-cobalt">
+          <div key={label} className="flex flex-col gap-2 rounded-[20px] border border-line bg-surface p-5">
+            <span className="flex items-center justify-between text-sm font-semibold text-link">
               {label} day score <Badge tone={scoreTone(score)} mono>{score}</Badge>
             </span>
             <span className="font-display text-[22px] font-bold">{score >= 70 ? "Favourable" : score >= 50 ? "Mixed" : "Avoid"}</span>
-            <span className="text-[13px] text-[#3A4150]">Based on tithi, nakshatra, yoga and weekday.</span>
+            <span className="text-[13px] text-fg-2">Based on tithi, nakshatra, yoga and weekday.</span>
           </div>
         ))}
       </div>
@@ -190,14 +190,14 @@ function Window({ label, time, note, className, tone }: { label: string; time: s
     <div className={cx("flex flex-col gap-2 rounded-[20px] border p-5", className)}>
       <span className={cx("text-sm font-semibold", tone)}>{label}</span>
       <span className="font-mono text-xl font-semibold whitespace-nowrap">{time}</span>
-      <span className="text-[13px] leading-normal text-[#3A4150]">{note}</span>
+      <span className="text-[13px] leading-normal text-fg-2">{note}</span>
     </div>
   );
 }
 
 function Detail({ label, value, note, good }: { label: string; value: string; note: string; good?: boolean }) {
   return (
-    <div className="flex flex-col gap-1 rounded-2xl bg-paper p-4">
+    <div className="flex flex-col gap-1 rounded-2xl bg-subtle p-4">
       <span className="text-xs font-semibold tracking-[0.06em] text-muted uppercase">{label}</span>
       <span className="font-display text-lg font-bold">{value}</span>
       <span className={cx("text-[13px]", good === undefined ? "text-muted" : good ? "text-green" : "text-red")}>{note}</span>

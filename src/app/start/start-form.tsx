@@ -7,7 +7,7 @@ import { isUnderAgeLimit } from "@/lib/engine/core";
 import { useProfiles } from "@/lib/profile-context";
 import { CITIES, PRESETS, cityById, type Profile } from "@/lib/profiles";
 
-const inputClass = "h-13 rounded-2xl border border-[#D5D9E0] bg-white px-4 text-base text-ink";
+const inputClass = "h-13 rounded-2xl border border-line-strong bg-surface px-4 text-base text-fg";
 
 export function StartForm() {
   const router = useRouter();
@@ -42,7 +42,7 @@ export function StartForm() {
   return (
     <form onSubmit={submit} className="flex w-full max-w-[560px] flex-col gap-7" noValidate>
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-xs tracking-[0.12em] text-cobalt uppercase">Step 1 of 1</span>
+        <span className="font-mono text-xs tracking-[0.12em] text-link uppercase">Step 1 of 1</span>
         <h2 className="font-display text-4xl font-extrabold tracking-[-0.03em]">Create your matrix</h2>
       </div>
 
@@ -54,7 +54,7 @@ export function StartForm() {
               key={p.id}
               type="button"
               onClick={() => openPreset(p)}
-              className="min-h-11 cursor-pointer rounded-full border border-[#D5D9E0] bg-white px-4.5 text-sm font-semibold hover:border-ink"
+              className="min-h-11 cursor-pointer rounded-full border border-line-strong bg-surface px-4.5 text-sm font-semibold hover:border-ink"
             >
               {p.name}
             </button>

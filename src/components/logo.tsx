@@ -17,9 +17,9 @@ export function LogoMark({ size = 28 }: { size?: number }) {
   );
 }
 
-export function Logo({ href = "/", size = 28 }: { href?: string; size?: number }) {
+export function Logo({ href = "/", size = 28, className = "text-paper" }: { href?: string; size?: number; className?: string }) {
   return (
-    <Link href={href} className="flex items-center gap-2.5 text-paper no-underline">
+    <Link href={href} className={`flex items-center gap-2.5 no-underline ${className}`}>
       <LogoMark size={size} />
       <span className="font-display text-[19px] font-extrabold tracking-tight">Divine Matrix</span>
     </Link>

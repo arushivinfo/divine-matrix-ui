@@ -38,7 +38,7 @@ export function JourneyView() {
             type="date"
             value={day ?? ""}
             onChange={(e) => e.target.value && setPicked(e.target.value)}
-            className="h-13 rounded-2xl border border-[#D5D9E0] bg-white px-3.5 font-mono text-[15px]"
+            className="h-13 rounded-2xl border border-line-strong bg-surface px-3.5 font-mono text-[15px]"
           />
         </div>
         <div className="flex flex-[2_1_320px] flex-col gap-2">
@@ -52,7 +52,7 @@ export function JourneyView() {
                 onClick={() => setDirection(d)}
                 className={cx(
                   "h-13 cursor-pointer rounded-2xl border font-semibold",
-                  d === direction ? "border-ink bg-ink text-white" : "border-[#D5D9E0] bg-white",
+                  d === direction ? "border-fg bg-fg text-bg" : "border-line-strong bg-surface",
                   plan?.blocked === d && d !== direction && "text-red",
                 )}
               >
@@ -67,7 +67,7 @@ export function JourneyView() {
         <Skeleton className="h-[520px]" />
       ) : (
         <>
-          <section className="flex flex-wrap items-center gap-8 rounded-3xl bg-ink p-7 text-paper">
+          <section className="flex flex-wrap items-center gap-8 rounded-3xl bg-contrast p-7 text-paper">
             <div
               className={cx(
                 "flex size-[140px] shrink-0 flex-col items-center justify-center rounded-[32px] text-ink",
@@ -89,7 +89,7 @@ export function JourneyView() {
 
           <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-4">
             {plan.checks.map((c) => (
-              <div key={c.label} className="flex flex-col gap-2.5 rounded-[20px] border border-line bg-white p-5">
+              <div key={c.label} className="flex flex-col gap-2.5 rounded-[20px] border border-line bg-surface p-5">
                 <div className="flex items-center justify-between gap-3">
                   <span className="font-semibold">{c.label}</span>
                   <Badge tone={STATUS[c.status].tone}>{STATUS[c.status].label}</Badge>
@@ -106,14 +106,14 @@ export function JourneyView() {
               {plan.months.map((m) => (
                 <div key={`${m.year}-${m.month}`} className="flex h-full flex-col items-center justify-end gap-1.5" title={`${MONTHS_LONG[m.month]} ${m.year}: ${m.score}`}>
                   <div
-                    className={cx("w-full rounded-lg", m.score >= 70 ? "bg-[#32D583]" : m.score >= 50 ? "bg-[#A6F4C5]" : "bg-[#E4E7EC]")}
+                    className={cx("w-full rounded-lg", m.score >= 70 ? "bg-heat-peak" : m.score >= 50 ? "bg-heat-high" : "bg-heat-base")}
                     style={{ height: `${Math.max(m.score, 6)}%` }}
                   />
                   <span className="font-mono text-[11px] text-muted">{MONTHS_SHORT[m.month]}</span>
                 </div>
               ))}
             </div>
-            <p className="text-sm text-[#3A4150]">
+            <p className="text-sm text-fg-2">
               Peak months:{" "}
               {best.map((m, i) => (
                 <span key={`${m.year}-${m.month}`}>

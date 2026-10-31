@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { HeroGrid } from "@/components/hero-grid";
 import { Logo } from "@/components/logo";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Ring, cx } from "@/components/ui";
 
 const SYSTEMS = [
@@ -38,8 +39,8 @@ const PLANS = [
 ];
 
 const GREEN = "#32D583";
-const MINT = "#7CE7AC";
-const SLATE = "#262C38";
+const MINT = "var(--heat-high)";
+const SLATE = "var(--heat-base)";
 const RED = "#B42318";
 const SKY = "#7CD4FD";
 const COBALT = "#2F45FF";
@@ -55,9 +56,9 @@ function Check({ color = GREEN }: { color?: string }) {
 function SectionHead({ kicker, title, sub, center }: { kicker: string; title: ReactNode; sub?: string; center?: boolean }) {
   return (
     <div className={cx("flex max-w-[720px] flex-col gap-4", center && "mx-auto items-center text-center")}>
-      <span className="font-mono text-xs tracking-[0.14em] text-signal uppercase">{kicker}</span>
+      <span className="font-mono text-xs tracking-[0.14em] text-accent-text uppercase">{kicker}</span>
       <h2 className="font-display text-[clamp(34px,4.6vw,56px)] leading-[1.04] font-extrabold tracking-[-0.035em] text-balance">{title}</h2>
-      {sub && <p className="max-w-[560px] text-[17px] leading-relaxed text-soft">{sub}</p>}
+      {sub && <p className="max-w-[560px] text-[17px] leading-relaxed text-fg-soft">{sub}</p>}
     </div>
   );
 }
@@ -74,8 +75,8 @@ function Bento({ className, title, body, children }: { className?: string; title
         {children}
       </div>
       <div className="flex flex-col gap-1.5">
-        <h3 className="font-display text-xl font-bold text-paper">{title}</h3>
-        <p className="text-[15px] leading-relaxed text-soft">{body}</p>
+        <h3 className="font-display text-xl font-bold text-fg">{title}</h3>
+        <p className="text-[15px] leading-relaxed text-fg-soft">{body}</p>
       </div>
     </div>
   );
@@ -98,13 +99,13 @@ function Complication({ value, color, title, note, className, delay }: { value: 
       className={cx("glass-strong absolute z-10 hidden items-center gap-3 rounded-2xl p-3 pr-5 lg:flex", className)}
       style={{ animation: `dm-float 6s ease-in-out ${delay} infinite` }}
     >
-      <Ring value={value} size={44} stroke={5} color={color} label="">
+      <Ring track="var(--ring-track)" value={value} size={44} stroke={5} color={color} label="">
         <span className="font-mono text-xs font-semibold">{value}</span>
       </Ring>
       <span className="text-left text-sm leading-tight">
         {title}
         <br />
-        <span className="text-muted-2">{note}</span>
+        <span className="text-fg-muted">{note}</span>
       </span>
     </div>
   );
@@ -112,25 +113,26 @@ function Complication({ value, color, title, note, className, delay }: { value: 
 
 export default function Home() {
   return (
-    <div className="relative isolate min-h-screen overflow-x-clip bg-ink text-paper">
+    <div className="relative isolate min-h-screen overflow-x-clip bg-bg text-fg">
       {/* Floating glass nav */}
       <div className="sticky top-0 z-30 px-4 pt-4">
         <header className="mx-auto flex max-w-[1160px] items-center justify-between gap-4 glass-strong rounded-full py-2.5 pr-2.5 pl-5">
-          <Logo size={24} />
+          <Logo size={24} className="text-fg" />
           <nav aria-label="Main" className="flex items-center gap-1 text-[15px]">
             {[
               ["#product", "Product"],
               ["#how", "How it works"],
               ["#pricing", "Pricing"],
             ].map(([href, label]) => (
-              <a key={href} href={href} className="hidden rounded-full px-4 py-2 text-soft transition-colors hover:text-white md:inline">
+              <a key={href} href={href} className="hidden rounded-full px-4 py-2 text-fg-soft transition-colors hover:text-fg md:inline">
                 {label}
               </a>
             ))}
-            <Link href="/dashboard" className="hidden rounded-full px-4 py-2 text-soft transition-colors hover:text-white sm:inline">
+            <Link href="/dashboard" className="hidden rounded-full px-4 py-2 text-fg-soft transition-colors hover:text-fg sm:inline">
               Sign in
             </Link>
-            <Link href="/start" className="rounded-full bg-paper px-5 py-2.5 font-semibold text-ink transition-colors hover:bg-white">
+            <ThemeToggle className="mr-1" />
+            <Link href="/start" className="rounded-full bg-fg px-5 py-2.5 font-semibold text-bg transition-opacity hover:opacity-90">
               Get started
             </Link>
           </nav>
@@ -141,7 +143,7 @@ export default function Home() {
       <section className="relative">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.07)_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_30%,black,transparent)] bg-[size:28px_28px]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(var(--dots)_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_30%,black,transparent)] bg-[size:28px_28px]"
         />
         <Orb className="top-[38%] left-[8%] size-[380px] opacity-30" color="#32D583" />
         <Orb className="top-[48%] right-[6%] size-[340px] opacity-25" color="#2F45FF" delay="-6s" />
@@ -150,63 +152,63 @@ export default function Home() {
         <div className="relative mx-auto flex max-w-[1160px] flex-col items-center gap-8 px-6 pt-20 text-center sm:pt-28">
           <Link
             href="/dashboard"
-            className="flex items-center gap-2 rounded-full border border-white/[0.1] bg-white/[0.04] py-1.5 pr-3 pl-1.5 text-xs whitespace-nowrap text-soft sm:text-sm transition-colors hover:border-white/20"
+            className="flex items-center gap-2 rounded-full border border-edge bg-tint py-1.5 pr-3 pl-1.5 text-xs whitespace-nowrap text-fg-soft sm:text-sm transition-colors hover:border-fg/20"
           >
             <span className="rounded-full bg-signal px-2.5 py-0.5 text-xs font-semibold text-ink">Live</span>
             Modern cosmic life optimization engine
             <span aria-hidden="true">→</span>
           </Link>
           <h1 className="max-w-[920px] font-display text-[clamp(48px,8.4vw,104px)] leading-[0.95] font-extrabold tracking-[-0.045em] text-balance">
-            Know <span className="text-signal">when</span>, not just what.
+            Know <span className="text-accent-text">when</span>, not just what.
           </h1>
-          <p className="max-w-[520px] text-lg leading-relaxed text-soft sm:text-xl">
+          <p className="max-w-[520px] text-lg leading-relaxed text-fg-soft sm:text-xl">
             Meet your digital cosmic assistant. Know exactly when to act, when to hold, and how to master your day.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link href="/start" className="rounded-full bg-signal px-7 py-4 font-semibold text-ink transition-transform hover:-translate-y-0.5">
               Create your matrix — free
             </Link>
-            <Link href="/dashboard" className="glass-soft rounded-full px-7 py-4 font-semibold text-paper transition-colors hover:bg-white/[0.08]">
+            <Link href="/dashboard" className="glass-soft rounded-full px-7 py-4 font-semibold text-fg transition-colors hover:bg-tint">
               See a live demo
             </Link>
           </div>
-          <span className="text-sm text-muted-2">Backed by classical Vedic &amp; modern astrology · Powered by the Divine Matrix System™</span>
+          <span className="text-sm text-fg-muted">Backed by classical Vedic &amp; modern astrology · Powered by the Divine Matrix System™</span>
         </div>
 
         {/* Product window */}
         <div className="relative mx-auto mt-16 max-w-[980px] px-6 pb-24">
           <div className="glass relative rounded-[28px] p-2">
             <div className="flex items-center gap-2 px-4 py-3" aria-hidden="true">
-              <span className="size-3 rounded-full bg-white/10" />
-              <span className="size-3 rounded-full bg-white/10" />
-              <span className="size-3 rounded-full bg-white/10" />
-              <span className="mx-auto rounded-full bg-white/[0.05] px-4 py-1 font-mono text-xs text-muted-2">divinematrix.app/dashboard</span>
+              <span className="size-3 rounded-full bg-tint" />
+              <span className="size-3 rounded-full bg-tint" />
+              <span className="size-3 rounded-full bg-tint" />
+              <span className="mx-auto rounded-full bg-tint px-4 py-1 font-mono text-xs text-fg-muted">divinematrix.app/dashboard</span>
             </div>
-            <div className="grid gap-2 rounded-[22px] bg-ink/40 p-3 sm:p-5 md:grid-cols-[1.5fr_1fr]">
+            <div className="grid gap-2 rounded-[22px] bg-[var(--window)] p-3 sm:p-5 md:grid-cols-[1.5fr_1fr]">
               <div className="glass-soft rounded-2xl p-5">
                 <HeroGrid />
               </div>
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-4 glass-soft rounded-2xl p-5">
-                  <Ring value={72} size={72} stroke={8} color={GREEN} label="Overall score 72 of 100">
+                  <Ring track="var(--ring-track)" value={72} size={72} stroke={8} color={GREEN} label="Overall score 72 of 100">
                     <span className="font-mono text-lg font-semibold">72</span>
                   </Ring>
                   <div className="flex flex-col gap-0.5 text-left">
-                    <span className="text-sm text-soft">Overall today</span>
+                    <span className="text-sm text-fg-soft">Overall today</span>
                     <span className="font-display text-xl font-bold">Favourable</span>
                   </div>
                 </div>
                 <div className="flex flex-col gap-2 glass-soft rounded-2xl p-5 text-left">
-                  <span className="flex items-center gap-2 font-mono text-[11px] tracking-[0.1em] text-signal uppercase">
+                  <span className="flex items-center gap-2 font-mono text-[11px] tracking-[0.1em] text-accent-text uppercase">
                     <span className="size-1.5 rounded-full bg-signal" style={{ animation: "dm-pulse 1.8s ease-out infinite" }} />
                     Live alert · Exact
                   </span>
                   <span className="font-display text-lg font-bold">Relationships &amp; lifestyle</span>
-                  <span className="text-sm leading-relaxed text-soft">Live Mercury meets your birth Venus. Network actively this week.</span>
+                  <span className="text-sm leading-relaxed text-fg-soft">Live Mercury meets your birth Venus. Network actively this week.</span>
                 </div>
                 <div className="flex flex-1 flex-col justify-center gap-1 glass-soft rounded-2xl p-5 text-left">
-                  <span className="text-sm text-soft">Golden window · Abhijit</span>
-                  <span className="font-mono text-2xl font-semibold text-signal">11:46 – 12:34</span>
+                  <span className="text-sm text-fg-soft">Golden window · Abhijit</span>
+                  <span className="font-mono text-2xl font-semibold text-accent-text">11:46 – 12:34</span>
                 </div>
               </div>
             </div>
@@ -217,13 +219,13 @@ export default function Home() {
       </section>
 
       {/* Systems ticker */}
-      <section aria-label="Built on classical systems" className="border-y border-white/[0.06] py-6">
+      <section aria-label="Built on classical systems" className="border-y border-edge py-6">
         <div className="flex overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_12%,black_88%,transparent)]">
           <div className="flex shrink-0" style={{ animation: "dm-marquee 40s linear infinite" }}>
             {[...SYSTEMS, ...SYSTEMS].map((s, i) => (
-              <span key={i} aria-hidden={i >= SYSTEMS.length} className="flex shrink-0 items-center gap-10 pr-10 font-mono text-sm whitespace-nowrap text-muted-2">
+              <span key={i} aria-hidden={i >= SYSTEMS.length} className="flex shrink-0 items-center gap-10 pr-10 font-mono text-sm whitespace-nowrap text-fg-muted">
                 {s}
-                <span aria-hidden="true" className="text-signal">✦</span>
+                <span aria-hidden="true" className="text-accent-text">✦</span>
               </span>
             ))}
           </div>
@@ -244,14 +246,14 @@ export default function Home() {
           sub="We keep the depth of classical Vedic systems and drop the vague forecasts. Data you can glance at, track and act on — like a smartwatch for your life."
         />
         <div className="glass overflow-hidden rounded-[28px]">
-          <div className="grid grid-cols-2 border-b border-white/[0.08] bg-white/[0.03] font-mono text-xs tracking-[0.1em] uppercase">
-            <span className="px-5 py-4 text-muted-2 sm:px-6">Traditional</span>
-            <span className="border-l border-white/[0.08] px-5 py-4 text-signal sm:px-6">Divine Matrix</span>
+          <div className="grid grid-cols-2 border-b border-edge bg-tint font-mono text-xs tracking-[0.1em] uppercase">
+            <span className="px-5 py-4 text-fg-muted sm:px-6">Traditional</span>
+            <span className="border-l border-edge px-5 py-4 text-accent-text sm:px-6">Divine Matrix</span>
           </div>
           {COMPARE.map(([old, neu]) => (
-            <div key={old} className="grid grid-cols-2 border-b border-white/[0.06] last:border-b-0">
-              <span className="flex items-center px-5 py-5 text-muted-2 line-through decoration-white/20 sm:px-6">{old}</span>
-              <span className="flex items-center gap-3 border-l border-white/[0.08] px-5 py-5 font-medium sm:px-6">
+            <div key={old} className="grid grid-cols-2 border-b border-edge last:border-b-0">
+              <span className="flex items-center px-5 py-5 text-fg-muted line-through decoration-fg/25 sm:px-6">{old}</span>
+              <span className="flex items-center gap-3 border-l border-edge px-5 py-5 font-medium sm:px-6">
                 <Check />
                 {neu}
               </span>
@@ -282,7 +284,7 @@ export default function Home() {
                   [84, SKY],
                 ] as const
               ).map(([v, c]) => (
-                <Ring key={v} value={v} size={64} stroke={7} color={c} label="">
+                <Ring track="var(--ring-track)" key={v} value={v} size={64} stroke={7} color={c} label="">
                   <span className="font-mono text-sm font-semibold">{v}</span>
                 </Ring>
               ))}
@@ -290,13 +292,13 @@ export default function Home() {
           </Bento>
           <Bento className="md:col-span-2" title="Time Slider" body="Move a year either way and watch alignments form.">
             <div className="flex w-full flex-col gap-3">
-              <div className="relative h-1.5 rounded-full bg-white/10">
+              <div className="relative h-1.5 rounded-full bg-tint">
                 <div className="absolute inset-y-0 left-0 w-3/5 rounded-full bg-signal" />
                 <span className="absolute top-1/2 left-3/5 size-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-ink-2 bg-signal" />
               </div>
-              <div className="flex justify-between font-mono text-xs text-muted-2">
+              <div className="flex justify-between font-mono text-xs text-fg-muted">
                 <span>−365d</span>
-                <span className="text-signal">+42 days</span>
+                <span className="text-accent-text">+42 days</span>
                 <span>+365d</span>
               </div>
             </div>
@@ -322,7 +324,7 @@ export default function Home() {
               ).map(([c, w, bg]) => (
                 <span
                   key={c}
-                  className={cx("flex h-12 min-w-0 items-center justify-center rounded-md", bg === GREEN ? "text-ink" : "text-soft")}
+                  className={cx("flex h-12 min-w-0 items-center justify-center rounded-md", bg === GREEN ? "text-ink" : bg === COBALT ? "text-white" : "text-fg-soft")}
                   style={{ flex: `${w} 1 0`, background: bg }}
                 >
                   {c}
@@ -344,7 +346,7 @@ export default function Home() {
                   key={i}
                   className={cx(
                     "flex size-12 items-center justify-center rounded-xl",
-                    d === "E" ? "bg-signal text-ink" : d === "N" ? "bg-[#B42318] text-white" : d ? "bg-white/[0.06] text-soft" : "",
+                    d === "E" ? "bg-signal text-ink" : d === "N" ? "bg-[#B42318] text-white" : d ? "bg-tint text-fg-soft" : "",
                   )}
                 >
                   {d}
@@ -360,10 +362,10 @@ export default function Home() {
         <SectionHead kicker="How it works" title="Three inputs. One living map." />
         <ol className="grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-6">
           {STEPS.map(([n, title, body]) => (
-            <li key={n} className="flex flex-col gap-4 border-t border-white/[0.12] pt-6">
-              <span className="font-mono text-sm text-signal">{n}</span>
+            <li key={n} className="flex flex-col gap-4 border-t border-edge pt-6">
+              <span className="font-mono text-sm text-accent-text">{n}</span>
               <h3 className="font-display text-2xl font-bold">{title}</h3>
-              <p className="leading-relaxed text-soft">{body}</p>
+              <p className="leading-relaxed text-fg-soft">{body}</p>
             </li>
           ))}
         </ol>
@@ -382,7 +384,7 @@ export default function Home() {
               </div>
               <div className="flex items-baseline gap-1.5">
                 <span className="font-display text-5xl font-extrabold tracking-[-0.03em]">{p.price}</span>
-                <span className="text-muted-2">{p.per}</span>
+                <span className="text-fg-muted">{p.per}</span>
               </div>
               <ul className="flex flex-1 flex-col gap-3 text-[15px]">
                 {p.items.map((it) => (
@@ -396,7 +398,7 @@ export default function Home() {
                 href="/start"
                 className={cx(
                   "rounded-full px-5 py-3.5 text-center font-semibold transition-colors",
-                  p.featured ? "bg-signal text-ink hover:brightness-110" : "border border-white/[0.14] hover:bg-white/[0.06]",
+                  p.featured ? "bg-signal text-ink hover:brightness-110" : "border border-edge hover:bg-tint",
                 )}
               >
                 {p.cta}
@@ -420,15 +422,15 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="border-t border-white/[0.06]">
-        <div className="mx-auto flex max-w-[1160px] flex-wrap items-start justify-between gap-6 px-6 pt-10 pb-6 text-sm text-muted-2">
-          <Logo size={22} />
+      <footer className="border-t border-edge">
+        <div className="mx-auto flex max-w-[1160px] flex-wrap items-start justify-between gap-6 px-6 pt-10 pb-6 text-sm text-fg-muted">
+          <Logo size={22} className="text-fg" />
           <span className="max-w-[520px] leading-relaxed">
             Insights are for guidance and reflection only. Wellbeing scores are not medical advice — please consult a qualified professional.
           </span>
           <span>© Divine Matrix</span>
         </div>
-        <div className="mx-auto flex max-w-[1160px] flex-col gap-1.5 px-6 pb-10 text-center font-mono text-xs leading-relaxed text-muted-2">
+        <div className="mx-auto flex max-w-[1160px] flex-col gap-1.5 px-6 pb-10 text-center font-mono text-xs leading-relaxed text-fg-muted">
           <span>Powered by Divine Matrix System™ · Live Engine · Astronomy Engine (sub-arcsecond accuracy)</span>
           <span>Lahiri (Chitrapaksha) Ayanamsa · KP 249 · Panchadha Maitri · DMLI Heatmap</span>
         </div>

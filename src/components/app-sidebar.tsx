@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "./logo";
+import { ThemeToggle } from "./theme-toggle";
 import { cx } from "./ui";
 
 const NAV = [
@@ -17,13 +18,14 @@ const NAV = [
 export function AppSidebar() {
   const pathname = usePathname();
   return (
-    <div className="bg-ink lg:w-[260px] lg:shrink-0">
+    <div className="bg-contrast lg:w-[260px] lg:shrink-0">
       <nav
         aria-label="App"
         className="flex w-full flex-col gap-6 px-4 py-6 text-[#C9CED8] lg:sticky lg:top-0 lg:h-screen lg:gap-7 lg:py-7"
       >
-        <div className="px-3">
+        <div className="flex items-center justify-between gap-3 pl-3">
           <Logo size={24} />
+          <ThemeToggle onDark />
         </div>
         <div className="flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">
           {NAV.map((item) => {

@@ -82,7 +82,7 @@ export function DashboardView() {
         </div>
       </div>
 
-      <section aria-label="At a glance" className="flex flex-wrap items-center justify-between gap-3 rounded-[28px] bg-ink px-6 py-5 text-paper">
+      <section aria-label="At a glance" className="flex flex-wrap items-center justify-between gap-3 rounded-[28px] bg-contrast px-6 py-5 text-paper">
         <span className="font-mono text-xs tracking-[0.12em] text-muted-2 uppercase">
           At a glance{days !== 0 && ` · ${dayLabel}`}
         </span>
@@ -99,7 +99,7 @@ export function DashboardView() {
       </section>
 
       <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
-        <div className="flex flex-col gap-1.5 rounded-[20px] bg-ink px-6 py-5 text-paper">
+        <div className="flex flex-col gap-1.5 rounded-[20px] bg-contrast px-6 py-5 text-paper">
           <span className="text-[13px] text-soft">
             Anchor zone <span className="font-mono text-[11px] text-signal">· Lagna</span>
           </span>
@@ -115,7 +115,7 @@ export function DashboardView() {
           note={a.ad ? `Until ${fmtMonthYear(a.ad.end)}` : ""}
           tone="text-muted"
         />
-        <Stat label="Best business window" value={`${a.hours.window.from} – ${a.hours.window.to}`} note="Hora-based" tone="text-cobalt" />
+        <Stat label="Best business window" value={`${a.hours.window.from} – ${a.hours.window.to}`} note="Hora-based" tone="text-link" />
       </div>
 
       <div className="flex flex-wrap items-start gap-6">
@@ -194,12 +194,12 @@ export function DashboardView() {
             {live && <span className="flex items-center gap-1.5"><Chip code="Sa" title="" live /> Live position</span>}
             {live && (
               <span className="flex items-center gap-1.5">
-                <span className="size-3.5 rounded border-2 bg-[#E4E7EC]" style={{ borderColor: ALIGNMENT_RING }} /> Alignment within 5°
+                <span className="size-3.5 rounded border-2 bg-heat-base" style={{ borderColor: ALIGNMENT_RING }} /> Alignment within 5°
               </span>
             )}
           </div>
 
-          <div className={cx("flex flex-wrap items-center gap-4 rounded-2xl bg-paper px-5 py-4", !live && "opacity-50")}>
+          <div className={cx("flex flex-wrap items-center gap-4 rounded-2xl bg-subtle px-5 py-4", !live && "opacity-50")}>
             <label htmlFor="slider" className="flex items-center gap-2 text-sm font-semibold">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2F45FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M12 7v5l3 2M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -221,7 +221,7 @@ export function DashboardView() {
               {dayLabel} <span className="text-muted">· {day}</span>
             </span>
             {days !== 0 && (
-              <button type="button" onClick={() => setDays(0)} className="cursor-pointer text-sm font-semibold text-cobalt">
+              <button type="button" onClick={() => setDays(0)} className="cursor-pointer text-sm font-semibold text-link">
                 Reset
               </button>
             )}
@@ -265,9 +265,9 @@ export function DashboardView() {
               {PLANET_IDS.map((p) => {
                 const on = activeSectors.has(p);
                 return (
-                  <div key={p} className={cx("flex flex-col gap-1 rounded-[14px] border p-3", on ? "border-[#C9D0FF] bg-cobalt-soft" : "border-line")}>
+                  <div key={p} className={cx("flex flex-col gap-1 rounded-[14px] border p-3", on ? "border-cobalt/30 bg-cobalt-soft" : "border-line")}>
                     <span className="text-sm font-semibold">{LIFE_SECTOR[p]}</span>
-                    <span className={cx("text-xs font-semibold", on ? "text-cobalt" : "text-muted")}>{on ? "Active" : "Steady"}</span>
+                    <span className={cx("text-xs font-semibold", on ? "text-link" : "text-muted")}>{on ? "Active" : "Steady"}</span>
                   </div>
                 );
               })}
@@ -295,12 +295,12 @@ export function DashboardView() {
                 const kp = resolveKP(sid);
                 return (
                   <tr key={p}>
-                    <td className="border-b border-[#F0F2F5] p-3 font-semibold">{PLANET_NAME[p]}</td>
-                    <td className="border-b border-[#F0F2F5] p-3 font-mono text-[13px]">{formatDegrees(sid)}</td>
-                    <td className="border-b border-[#F0F2F5] p-3">{RASHI_EN[rashi]}</td>
-                    <td className="border-b border-[#F0F2F5] p-3">{calcHouse(rashi, lagna)}</td>
-                    <td className="border-b border-[#F0F2F5] p-3 text-muted">{ELEMENTS[row]} · {MODES[col]}</td>
-                    <td className="border-b border-[#F0F2F5] p-3 font-mono text-[13px] text-cobalt">
+                    <td className="border-b border-line-soft p-3 font-semibold">{PLANET_NAME[p]}</td>
+                    <td className="border-b border-line-soft p-3 font-mono text-[13px]">{formatDegrees(sid)}</td>
+                    <td className="border-b border-line-soft p-3">{RASHI_EN[rashi]}</td>
+                    <td className="border-b border-line-soft p-3">{calcHouse(rashi, lagna)}</td>
+                    <td className="border-b border-line-soft p-3 text-muted">{ELEMENTS[row]} · {MODES[col]}</td>
+                    <td className="border-b border-line-soft p-3 font-mono text-[13px] text-link">
                       {PLANET_CODE[kp.starLord]} / {PLANET_CODE[kp.subLord]}
                     </td>
                   </tr>
@@ -323,7 +323,7 @@ function Row({ children }: { children: React.ReactNode }) {
 
 function Stat({ label, value, note, tone }: { label: string; value: string; note: string; tone: string }) {
   return (
-    <div className="flex flex-col gap-1.5 rounded-[20px] border border-line bg-white px-6 py-5">
+    <div className="flex flex-col gap-1.5 rounded-[20px] border border-line bg-surface px-6 py-5">
       <span className="text-[13px] text-muted">{label}</span>
       <span className="font-display text-[26px] font-extrabold">{value}</span>
       <span className={cx("text-[13px] font-semibold", tone)}>{note}</span>

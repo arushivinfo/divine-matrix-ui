@@ -70,7 +70,7 @@ export function ChaptersView() {
         }
       />
 
-      <section className="flex flex-col gap-6 rounded-3xl bg-ink p-7 text-paper">
+      <section className="flex flex-col gap-6 rounded-3xl bg-contrast p-7 text-paper">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div className="flex flex-col gap-2">
             <span className="font-mono text-xs tracking-[0.12em] text-signal uppercase">
@@ -120,7 +120,7 @@ export function ChaptersView() {
         <button
           type="button"
           onClick={() => setPath([])}
-          className="min-h-9 cursor-pointer rounded-full border border-[#D5D9E0] bg-white px-3.5 font-semibold text-cobalt"
+          className="min-h-9 cursor-pointer rounded-full border border-line-strong bg-surface px-3.5 font-semibold text-link"
         >
           All chapters
         </button>
@@ -153,7 +153,7 @@ export function ChaptersView() {
                 "flex min-h-[150px] flex-col gap-2.5 rounded-[20px] border-2 p-4.5 text-left",
                 canOpen ? "cursor-pointer hover:-translate-y-0.5 hover:shadow-md" : "cursor-default",
                 "transition-transform",
-                st === "now" ? "border-ink bg-[#ECFDF3]" : "border-line bg-white",
+                st === "now" ? "border-fg bg-green-soft" : "border-line bg-surface",
                 st === "done" && "opacity-60",
               )}
             >
@@ -163,11 +163,11 @@ export function ChaptersView() {
                   {st === "now" ? "Now" : st === "done" ? "Done" : "Next"}
                 </Badge>
               </span>
-              <span className="font-mono text-[13px] font-semibold text-cobalt">{p.years.toFixed(p.years < 1 ? 2 : 1)} yrs</span>
+              <span className="font-mono text-[13px] font-semibold text-link">{p.years.toFixed(p.years < 1 ? 2 : 1)} yrs</span>
               <span className="font-mono text-xs leading-normal text-muted">
                 {fmtMonthYear(p.start)} → {fmtMonthYear(p.end)}
               </span>
-              <span className="text-[13px] leading-normal text-[#3A4150]">{p.sub ? `${p.sub} · ` : ""}{LIFE_SECTOR[p.lord]}</span>
+              <span className="text-[13px] leading-normal text-fg-2">{p.sub ? `${p.sub} · ` : ""}{LIFE_SECTOR[p.lord]}</span>
             </button>
           );
         })}

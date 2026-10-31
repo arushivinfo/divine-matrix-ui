@@ -50,9 +50,9 @@ export function ScoresView() {
               </div>
             </Card>
             <Card className="flex-[1_1_320px]">
-              <span className="font-mono text-xs tracking-[0.12em] text-cobalt uppercase">Your brief</span>
+              <span className="font-mono text-xs tracking-[0.12em] text-link uppercase">Your brief</span>
               <p className="font-display text-[22px] leading-snug font-bold">{a.brief.headline}</p>
-              <ul className="flex list-disc flex-col gap-2 pl-5 text-[15px] leading-normal text-[#3A4150]">
+              <ul className="flex list-disc flex-col gap-2 pl-5 text-[15px] leading-normal text-fg-2">
                 {a.brief.points.map((p) => (
                   <li key={p}>{p}</li>
                 ))}
@@ -97,14 +97,14 @@ export function ScoresView() {
                 <p className="text-sm font-medium text-green">No active friction — all clear.</p>
               ) : (
                 a.conflict.triggers.map((t) => (
-                  <div key={t.text} className="flex items-center gap-2.5 rounded-xl bg-paper px-3 py-2.5 text-sm">
+                  <div key={t.text} className="flex items-center gap-2.5 rounded-xl bg-subtle px-3 py-2.5 text-sm">
                     <span className={cx("size-2 shrink-0 rounded-full", t.severity === "medium" ? "bg-amber" : "bg-red")} />
                     {t.text}
                   </div>
                 ))
               )}
               {a.conflict.triggers[0] && (
-                <p className="rounded-xl bg-cobalt-soft p-3 text-sm leading-normal text-[#3A4150]">
+                <p className="rounded-xl bg-cobalt-soft p-3 text-sm leading-normal text-fg-2">
                   Suggested practice: {a.conflict.triggers[0].practice}
                 </p>
               )}
@@ -123,8 +123,8 @@ export function ScoresView() {
                 ]}
               />
               <div className="rounded-2xl bg-cobalt-soft p-3.5 text-center">
-                <span className="block text-xs text-[#3A4150]">Peak window</span>
-                <span className="block font-display text-2xl font-extrabold text-cobalt">
+                <span className="block text-xs text-fg-2">Peak window</span>
+                <span className="block font-display text-2xl font-extrabold text-link">
                   {a.hours.window.from} – {a.hours.window.to}
                 </span>
                 <span className="block font-mono text-xs text-muted">{a.hours.window.lords.map((l) => PLANET_NAME[l]).join(", ")} hora</span>
@@ -136,7 +136,7 @@ export function ScoresView() {
                     title={`${PLANET_NAME[h.lord]} hora`}
                     className={cx(
                       "rounded-md py-1.5 text-center font-mono text-[11px] font-semibold",
-                      h.score >= 3 ? "bg-[#32D583] text-[#052E1A]" : h.score >= 2 ? "bg-[#A6F4C5] text-[#053321]" : h.score < 0 ? "bg-[#FEE4E2] text-[#912018]" : "bg-[#F2F4F7] text-muted",
+                      h.score >= 3 ? "bg-heat-peak text-heat-peak-fg" : h.score >= 2 ? "bg-heat-high text-heat-high-fg" : h.score < 0 ? "bg-red-soft text-red" : "bg-subtle text-muted",
                     )}
                   >
                     {String(h.hour).padStart(2, "0")}
@@ -155,7 +155,7 @@ export function ScoresView() {
                   ["Higher education", a.learning.higherEd, "Jupiter · 9th house"],
                 ] as const
               ).map(([label, score, hint]) => (
-                <div key={label} className="flex items-center justify-between gap-3 rounded-[14px] bg-paper px-3.5 py-3">
+                <div key={label} className="flex items-center justify-between gap-3 rounded-[14px] bg-subtle px-3.5 py-3">
                   <div className="flex flex-col gap-0.5">
                     <span className="font-semibold">{label}</span>
                     <span className="text-xs text-muted">{hint}</span>
@@ -163,7 +163,7 @@ export function ScoresView() {
                   <Badge tone={score >= 75 ? "good" : score >= 50 ? "warn" : "bad"} mono>{score}</Badge>
                 </div>
               ))}
-              <p className="text-sm leading-normal text-[#3A4150]">{a.learning.tip}</p>
+              <p className="text-sm leading-normal text-fg-2">{a.learning.tip}</p>
             </Card>
 
             <Card>
@@ -199,7 +199,7 @@ export function ScoresView() {
                   ))}
                 </div>
               )}
-              <p className="text-sm leading-normal text-[#3A4150]">{a.health.advice}</p>
+              <p className="text-sm leading-normal text-fg-2">{a.health.advice}</p>
               <p className="text-xs leading-normal text-muted">For reflection only, not a diagnosis. Please consult a qualified medical professional.</p>
             </Card>
 
@@ -212,7 +212,7 @@ export function ScoresView() {
                     title={`${PLANET_NAME[d.lord]} · ${d.score > 0 ? "+" : ""}${d.score}`}
                     className={cx(
                       "flex flex-col gap-0.5 rounded-xl px-2 py-3 text-center",
-                      d.score >= 2 ? "bg-cobalt text-white" : d.score === 1 ? "bg-cobalt-soft text-ink" : d.score <= -1 ? "bg-red-soft text-[#8A1F17]" : "bg-paper text-ink",
+                      d.score >= 2 ? "bg-cobalt text-white" : d.score === 1 ? "bg-cobalt-soft text-fg" : d.score <= -1 ? "bg-red-soft text-red" : "bg-subtle text-fg",
                     )}
                   >
                     <span className="font-mono text-[13px] font-semibold">{d.dir === "C" ? "Centre" : d.dir}</span>
@@ -221,7 +221,7 @@ export function ScoresView() {
                   </div>
                 ))}
               </div>
-              <p className="text-sm text-[#3A4150]">
+              <p className="text-sm text-fg-2">
                 Activate:{" "}
                 {a.space.filter((d) => d.score >= 1).map((d) => (d.dir === "C" ? "Centre" : d.dir)).join(", ") || "—"}
                 {a.space.some((d) => d.score <= -1) && (

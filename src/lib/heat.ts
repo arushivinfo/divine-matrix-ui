@@ -1,27 +1,16 @@
 /**
  * Energy Grid heatmap palette. Same tiers and hue families as the original
  * Divine Matrix engine (green → light green → slate → red), retuned so each
- * step also differs in lightness and sits with the rest of the brand.
+ * step also differs in lightness. Colours are CSS variables, so they follow
+ * the light/dark theme (see globals.css).
  */
 export type HeatLevel = "peak" | "high" | "baseline" | "critical";
 
-interface Swatch {
-  bg: string;
-  fg: string;
-}
-
-const LIGHT: Record<HeatLevel, Swatch> = {
-  peak: { bg: "#32D583", fg: "#052E1A" },
-  high: { bg: "#A6F4C5", fg: "#053321" },
-  baseline: { bg: "#E4E7EC", fg: "#344054" },
-  critical: { bg: "#B42318", fg: "#FFFFFF" },
-};
-
-/** On dark surfaces (hero) the baseline tier becomes a dark slate. */
-const DARK: Record<HeatLevel, Swatch> = {
-  ...LIGHT,
-  high: { bg: "#7CE7AC", fg: "#053321" },
-  baseline: { bg: "#262C38", fg: "#C9CED8" },
+const SWATCH: Record<HeatLevel, { bg: string; fg: string }> = {
+  peak: { bg: "var(--heat-peak)", fg: "var(--heat-peak-fg)" },
+  high: { bg: "var(--heat-high)", fg: "var(--heat-high-fg)" },
+  baseline: { bg: "var(--heat-base)", fg: "var(--heat-base-fg)" },
+  critical: { bg: "var(--heat-crit)", fg: "var(--heat-crit-fg)" },
 };
 
 export const HEAT_INFO: Record<HeatLevel, { label: string; range: string }> = {
@@ -33,8 +22,8 @@ export const HEAT_INFO: Record<HeatLevel, { label: string; range: string }> = {
 
 export const HEAT_LEVELS: HeatLevel[] = ["peak", "high", "baseline", "critical"];
 
-export function heatSwatch(level: HeatLevel, surface: "light" | "dark" = "light") {
-  return (surface === "dark" ? DARK : LIGHT)[level];
+export function heatSwatch(level: HeatLevel) {
+  return SWATCH[level];
 }
 
 export function heatLevel(load: number): HeatLevel {
@@ -44,9 +33,9 @@ export function heatLevel(load: number): HeatLevel {
   return "critical";
 }
 
-/** Planet chips: birth positions in ink, live positions in sky blue with a soft halo. */
+/** Planet chips: birth positions in ink (inverted in dark theme), live positions in sky blue with a soft halo. */
 export const CHIP = {
-  natal: { bg: "#0D1117", fg: "#FFFFFF" },
+  natal: { bg: "var(--chip-natal)", fg: "var(--chip-natal-fg)" },
   live: { bg: "#7CD4FD", fg: "#0B3A53" },
 };
 
