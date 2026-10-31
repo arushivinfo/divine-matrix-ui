@@ -1,8 +1,10 @@
 "use client";
 
-import { createContext, useContext, useMemo, useSyncExternalStore } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useAuth } from "./auth-context";
 import { computeChart, type Chart } from "./engine/core";
 import { PRESETS, birthInput, type Profile } from "./profiles";
+import { supabase } from "./supabase";
 
 const STORAGE_KEY = "dm.profiles.v1";
 
@@ -63,6 +65,43 @@ function subscribeStored(listener: () => void) {
 
 const noopSubscribe = () => () => {};
 
+/* ---------- Cloud profiles (signed-in users) ---------- */
+
+interface ProfileRow {
+  id: string;
+  name: string;
+  dob: string;
+  tob: string;
+  city_id: string;
+}
+
+const COLUMNS = "id,name,dob,tob,city_id";
+const fromRow = (r: ProfileRow): Profile => ({ id: r.id, name: r.name, dob: r.dob, tob: r.tob.slice(0, 5), cityId: r.city_id });
+
+async function loadCloud(): Promise<Profile[]> {
+  const { data, error } = await supabase().from("birth_profiles").select(COLUMNS).order("created_at");
+  if (error) throw error;
+  return (data as ProfileRow[]).map(fromRow);
+}
+
+async function insertCloud(profiles: Profile[]): Promise<Profile[]> {
+  const rows = profiles.map((p) => ({ name: p.name, dob: p.dob, tob: p.tob, city_id: p.cityId }));
+  const { data, error } = await supabase().from("birth_profiles").insert(rows).select(COLUMNS);
+  if (error) throw error;
+  return (data as ProfileRow[]).map(fromRow);
+}
+
+/** Moves profiles saved in this browser into the signed-in account (once), then loads the account's list. */
+async function syncCloud(): Promise<Profile[]> {
+  const local = getStored();
+  if (local.saved.length > 0) {
+    const created = await insertCloud(local.saved);
+    const moved = local.saved.findIndex((p) => p.id === local.activeId);
+    setStored({ activeId: moved >= 0 ? created[moved].id : local.activeId, saved: [] });
+  }
+  return loadCloud();
+}
+
 /* ---------- Context ---------- */
 
 interface ProfileState {
@@ -70,8 +109,12 @@ interface ProfileState {
   ready: boolean;
   profile: Profile;
   profiles: Profile[];
+  /** True while a signed-in user's profiles are loading from the cloud. */
+  syncing: boolean;
+  /** Set when the cloud could not be reached. */
+  syncError: string | null;
   select: (id: string) => void;
-  save: (profile: Profile) => void;
+  save: (profile: Profile) => Promise<void>;
 }
 
 const ProfileContext = createContext<ProfileState | null>(null);
@@ -79,21 +122,45 @@ const ProfileContext = createContext<ProfileState | null>(null);
 export function ProfileProvider({ children }: { children: React.ReactNode }) {
   const ready = useSyncExternalStore(noopSubscribe, () => true, () => false);
   const stored = useSyncExternalStore(subscribeStored, getStored, () => DEFAULT_STORED);
+  const { user } = useAuth();
+  const [cloud, setCloud] = useState<{ userId: string; profiles: Profile[]; error: string | null } | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    syncCloud()
+      .then((profiles) => !cancelled && setCloud({ userId: user.id, profiles, error: null }))
+      .catch((e: Error) => !cancelled && setCloud({ userId: user.id, profiles: [], error: e.message }));
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  const mine = user && cloud?.userId === user.id ? cloud : null;
 
   const value = useMemo<ProfileState>(() => {
-    const profiles = [...stored.saved, ...PRESETS.filter((p) => !stored.saved.some((s) => s.id === p.id))];
+    const own = user ? (mine?.profiles ?? []) : stored.saved;
+    const profiles = [...own, ...PRESETS.filter((p) => !own.some((s) => s.id === p.id))];
     const profile = profiles.find((p) => p.id === stored.activeId) ?? PRESETS[0];
     return {
       ready,
       profile,
       profiles,
+      syncing: Boolean(user) && !mine,
+      syncError: mine?.error ?? null,
       select: (id) => setStored({ ...getStored(), activeId: id }),
-      save: (p) => {
+      save: async (p) => {
+        if (user) {
+          const [created] = await insertCloud([p]);
+          setCloud((c) => ({ userId: user.id, profiles: [...(c?.userId === user.id ? c.profiles : []), created], error: null }));
+          setStored({ ...getStored(), activeId: created.id });
+          return;
+        }
         const current = getStored();
         setStored({ activeId: p.id, saved: [p, ...current.saved.filter((s) => s.id !== p.id)] });
       },
     };
-  }, [ready, stored]);
+  }, [ready, stored, user, mine]);
 
   return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>;
 }

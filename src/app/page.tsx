@@ -128,7 +128,7 @@ export default function Home() {
                 {label}
               </a>
             ))}
-            <Link href="/dashboard" className="hidden rounded-full px-4 py-2 text-fg-soft transition-colors hover:text-fg sm:inline">
+            <Link href="/login" className="hidden rounded-full px-4 py-2 text-fg-soft transition-colors hover:text-fg sm:inline">
               Sign in
             </Link>
             <ThemeToggle className="mr-1" />

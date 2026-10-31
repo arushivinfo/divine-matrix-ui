@@ -17,6 +17,7 @@ export function StartForm() {
   const [tob, setTob] = useState("");
   const [cityId, setCityId] = useState(CITIES[0].id);
   const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
   const city = cityById(cityId);
 
@@ -25,7 +26,7 @@ export function StartForm() {
     router.push("/dashboard");
   }
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim() || !dob || !tob) {
       setError("Please fill in your name, date and time of birth.");
@@ -35,8 +36,14 @@ export function StartForm() {
       setError("Divine Matrix doesn’t analyse charts for children aged two or under.");
       return;
     }
-    save({ id: `p-${Date.now()}`, name: name.trim(), dob, tob, cityId });
-    router.push("/dashboard");
+    setBusy(true);
+    try {
+      await save({ id: `p-${Date.now()}`, name: name.trim(), dob, tob, cityId });
+      router.push("/dashboard");
+    } catch (err) {
+      setError(`Couldn’t save your profile: ${(err as Error).message}`);
+      setBusy(false);
+    }
   }
 
   return (
@@ -92,8 +99,12 @@ export function StartForm() {
         <p role="alert" className="rounded-2xl bg-red-soft px-4 py-3 text-sm font-medium text-red">{error}</p>
       )}
 
-      <button type="submit" className="flex h-14 cursor-pointer items-center justify-center gap-2.5 rounded-full bg-cobalt font-semibold text-white">
-        Build my matrix
+      <button
+        type="submit"
+        disabled={busy}
+        className="flex h-14 cursor-pointer items-center justify-center gap-2.5 rounded-full bg-cobalt font-semibold text-white disabled:cursor-wait disabled:opacity-70"
+      >
+        {busy ? "Saving…" : "Build my matrix"}
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M5 12h14M13 6l6 6-6 6" />
         </svg>
