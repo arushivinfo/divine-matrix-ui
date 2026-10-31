@@ -66,7 +66,7 @@ function Bento({ className, title, body, children }: { className?: string; title
   return (
     <div
       className={cx(
-        "flex min-h-[260px] flex-col justify-between gap-6 overflow-hidden rounded-[28px] border border-white/[0.08] bg-ink-2 p-7 transition-colors hover:border-white/[0.16]",
+        "glass flex min-h-[260px] flex-col justify-between gap-6 overflow-hidden rounded-[28px] p-7 transition-transform duration-300 hover:-translate-y-1",
         className,
       )}
     >
@@ -81,11 +81,21 @@ function Bento({ className, title, body, children }: { className?: string; title
   );
 }
 
+function Orb({ className, color, delay = "0s" }: { className: string; color: string; delay?: string }) {
+  return (
+    <div
+      aria-hidden="true"
+      className={cx("pointer-events-none absolute -z-10 rounded-full blur-[110px]", className)}
+      style={{ background: color, animation: `dm-drift 18s ease-in-out ${delay} infinite` }}
+    />
+  );
+}
+
 function Complication({ value, color, title, note, className, delay }: { value: number; color: string; title: string; note: string; className: string; delay: string }) {
   return (
     <div
       aria-hidden="true"
-      className={cx("absolute z-10 hidden items-center gap-3 rounded-2xl border border-white/[0.1] bg-ink-2/90 p-3 pr-5 shadow-2xl backdrop-blur lg:flex", className)}
+      className={cx("glass-strong absolute z-10 hidden items-center gap-3 rounded-2xl p-3 pr-5 lg:flex", className)}
       style={{ animation: `dm-float 6s ease-in-out ${delay} infinite` }}
     >
       <Ring value={value} size={44} stroke={5} color={color} label="">
@@ -102,10 +112,10 @@ function Complication({ value, color, title, note, className, delay }: { value: 
 
 export default function Home() {
   return (
-    <div className="min-h-screen overflow-x-clip bg-ink text-paper">
+    <div className="relative isolate min-h-screen overflow-x-clip bg-ink text-paper">
       {/* Floating glass nav */}
       <div className="sticky top-0 z-30 px-4 pt-4">
-        <header className="mx-auto flex max-w-[1160px] items-center justify-between gap-4 rounded-full border border-white/[0.08] bg-ink/70 py-2.5 pr-2.5 pl-5 backdrop-blur-xl">
+        <header className="mx-auto flex max-w-[1160px] items-center justify-between gap-4 glass-strong rounded-full py-2.5 pr-2.5 pl-5">
           <Logo size={24} />
           <nav aria-label="Main" className="flex items-center gap-1 text-[15px]">
             {[
@@ -133,7 +143,9 @@ export default function Home() {
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.07)_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_30%,black,transparent)] bg-[size:28px_28px]"
         />
-        <div aria-hidden="true" className="pointer-events-none absolute top-24 left-1/2 h-[420px] w-[720px] max-w-full -translate-x-1/2 rounded-full bg-signal/10 blur-[120px]" />
+        <Orb className="top-[38%] left-[8%] size-[380px] opacity-30" color="#32D583" />
+        <Orb className="top-[48%] right-[6%] size-[340px] opacity-25" color="#2F45FF" delay="-6s" />
+        <Orb className="top-[72%] left-[38%] size-[300px] opacity-20" color="#7CD4FD" delay="-12s" />
 
         <div className="relative mx-auto flex max-w-[1160px] flex-col items-center gap-8 px-6 pt-20 text-center sm:pt-28">
           <Link
@@ -154,7 +166,7 @@ export default function Home() {
             <Link href="/start" className="rounded-full bg-signal px-7 py-4 font-semibold text-ink transition-transform hover:-translate-y-0.5">
               Create your matrix — free
             </Link>
-            <Link href="/dashboard" className="rounded-full border border-white/[0.14] px-7 py-4 font-semibold text-paper transition-colors hover:bg-white/[0.06]">
+            <Link href="/dashboard" className="glass-soft rounded-full px-7 py-4 font-semibold text-paper transition-colors hover:bg-white/[0.08]">
               See a live demo
             </Link>
           </div>
@@ -163,19 +175,19 @@ export default function Home() {
 
         {/* Product window */}
         <div className="relative mx-auto mt-16 max-w-[980px] px-6 pb-24">
-          <div className="relative rounded-[28px] border border-white/[0.1] bg-ink-2/80 p-2 shadow-[0_40px_120px_-30px_rgba(50,213,131,0.25)] backdrop-blur">
+          <div className="glass relative rounded-[28px] p-2">
             <div className="flex items-center gap-2 px-4 py-3" aria-hidden="true">
               <span className="size-3 rounded-full bg-white/10" />
               <span className="size-3 rounded-full bg-white/10" />
               <span className="size-3 rounded-full bg-white/10" />
               <span className="mx-auto rounded-full bg-white/[0.05] px-4 py-1 font-mono text-xs text-muted-2">divinematrix.app/dashboard</span>
             </div>
-            <div className="grid gap-2 rounded-[22px] bg-ink p-3 sm:p-5 md:grid-cols-[1.5fr_1fr]">
-              <div className="rounded-2xl border border-white/[0.06] bg-ink-2 p-5">
+            <div className="grid gap-2 rounded-[22px] bg-ink/40 p-3 sm:p-5 md:grid-cols-[1.5fr_1fr]">
+              <div className="glass-soft rounded-2xl p-5">
                 <HeroGrid />
               </div>
               <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-4 rounded-2xl border border-white/[0.06] bg-ink-2 p-5">
+                <div className="flex items-center gap-4 glass-soft rounded-2xl p-5">
                   <Ring value={72} size={72} stroke={8} color={GREEN} label="Overall score 72 of 100">
                     <span className="font-mono text-lg font-semibold">72</span>
                   </Ring>
@@ -184,7 +196,7 @@ export default function Home() {
                     <span className="font-display text-xl font-bold">Favourable</span>
                   </div>
                 </div>
-                <div className="flex flex-col gap-2 rounded-2xl border border-white/[0.06] bg-ink-2 p-5 text-left">
+                <div className="flex flex-col gap-2 glass-soft rounded-2xl p-5 text-left">
                   <span className="flex items-center gap-2 font-mono text-[11px] tracking-[0.1em] text-signal uppercase">
                     <span className="size-1.5 rounded-full bg-signal" style={{ animation: "dm-pulse 1.8s ease-out infinite" }} />
                     Live alert · Exact
@@ -192,7 +204,7 @@ export default function Home() {
                   <span className="font-display text-lg font-bold">Relationships &amp; lifestyle</span>
                   <span className="text-sm leading-relaxed text-soft">Live Mercury meets your birth Venus. Network actively this week.</span>
                 </div>
-                <div className="flex flex-1 flex-col justify-center gap-1 rounded-2xl border border-white/[0.06] bg-ink-2 p-5 text-left">
+                <div className="flex flex-1 flex-col justify-center gap-1 glass-soft rounded-2xl p-5 text-left">
                   <span className="text-sm text-soft">Golden window · Abhijit</span>
                   <span className="font-mono text-2xl font-semibold text-signal">11:46 – 12:34</span>
                 </div>
@@ -219,7 +231,8 @@ export default function Home() {
       </section>
 
       {/* Astrology, re-engineered */}
-      <section id="different" className="mx-auto flex max-w-[1160px] flex-col gap-14 px-6 py-28">
+      <section id="different" className="relative mx-auto flex max-w-[1160px] flex-col gap-14 px-6 py-28">
+        <Orb className="top-1/2 -right-40 size-[360px] opacity-20" color="#32D583" />
         <SectionHead
           kicker="Astrology, re-engineered"
           title={
@@ -230,8 +243,8 @@ export default function Home() {
           }
           sub="We keep the depth of classical Vedic systems and drop the vague forecasts. Data you can glance at, track and act on — like a smartwatch for your life."
         />
-        <div className="overflow-hidden rounded-[28px] border border-white/[0.08]">
-          <div className="grid grid-cols-2 border-b border-white/[0.08] bg-ink-2 font-mono text-xs tracking-[0.1em] uppercase">
+        <div className="glass overflow-hidden rounded-[28px]">
+          <div className="grid grid-cols-2 border-b border-white/[0.08] bg-white/[0.03] font-mono text-xs tracking-[0.1em] uppercase">
             <span className="px-5 py-4 text-muted-2 sm:px-6">Traditional</span>
             <span className="border-l border-white/[0.08] px-5 py-4 text-signal sm:px-6">Divine Matrix</span>
           </div>
@@ -248,7 +261,9 @@ export default function Home() {
       </section>
 
       {/* Bento features */}
-      <section id="product" className="mx-auto flex max-w-[1160px] flex-col gap-14 px-6 pb-28">
+      <section id="product" className="relative mx-auto flex max-w-[1160px] flex-col gap-14 px-6 pb-28">
+        <Orb className="top-1/3 -left-32 size-[420px] opacity-25" color="#2F45FF" />
+        <Orb className="bottom-0 right-0 size-[380px] opacity-20" color="#32D583" delay="-8s" />
         <SectionHead kicker="Product" title="Everything you need to time your next move." />
         <div className="grid grid-cols-1 gap-4 md:grid-cols-6">
           <Bento className="md:col-span-4" title="Energy Grid" body="Your 12-zone map scored by load index, with today’s positions overlaid live.">
@@ -355,23 +370,24 @@ export default function Home() {
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="mx-auto flex max-w-[1160px] flex-col gap-14 px-6 pb-28">
+      <section id="pricing" className="relative mx-auto flex max-w-[1160px] flex-col gap-14 px-6 pb-28">
+        <Orb className="top-1/3 left-[calc(50%-210px)] size-[420px] opacity-25" color="#32D583" />
         <SectionHead center kicker="Pricing" title="Start free. Go deeper when you need to." />
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {PLANS.map((p) => (
-            <div key={p.name} className={cx("flex flex-col gap-6 rounded-[28px] p-8", p.featured ? "bg-paper text-ink" : "border border-white/[0.08] bg-ink-2")}>
+            <div key={p.name} className={cx("relative flex flex-col gap-6 rounded-[28px] p-8", p.featured ? "glass-strong !border-signal/50 shadow-[0_0_60px_-12px_rgba(50,213,131,0.45)]" : "glass")}>
               <div className="flex items-center justify-between">
                 <h3 className="font-display text-xl font-bold">{p.name}</h3>
                 {p.featured && <span className="rounded-full bg-signal px-3 py-1 text-xs font-semibold text-ink">Most popular</span>}
               </div>
               <div className="flex items-baseline gap-1.5">
                 <span className="font-display text-5xl font-extrabold tracking-[-0.03em]">{p.price}</span>
-                <span className={p.featured ? "text-muted" : "text-muted-2"}>{p.per}</span>
+                <span className="text-muted-2">{p.per}</span>
               </div>
               <ul className="flex flex-1 flex-col gap-3 text-[15px]">
                 {p.items.map((it) => (
                   <li key={it} className="flex items-start gap-2.5">
-                    <Check color={p.featured ? "#067647" : GREEN} />
+                    <Check />
                     {it}
                   </li>
                 ))}
@@ -380,7 +396,7 @@ export default function Home() {
                 href="/start"
                 className={cx(
                   "rounded-full px-5 py-3.5 text-center font-semibold transition-colors",
-                  p.featured ? "bg-ink text-white hover:bg-ink-2" : "border border-white/[0.14] hover:bg-white/[0.06]",
+                  p.featured ? "bg-signal text-ink hover:brightness-110" : "border border-white/[0.14] hover:bg-white/[0.06]",
                 )}
               >
                 {p.cta}
