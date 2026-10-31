@@ -1,13 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-const TONE = {
-  peak: ["#2F45FF", "#FFFFFF"],
-  high: ["#8E9BFF", "#0D1117"],
-  steady: ["#2A303C", "#C9CED8"],
-  low: ["#FF8A5B", "#0D1117"],
-} as const;
+import { HEAT, HEAT_LEVELS, heatLevel } from "@/lib/heat";
 
 /** Illustrative load values for the marketing grid (not a real profile). */
 const BASE: [string, number][] = [
@@ -16,8 +10,6 @@ const BASE: [string, number][] = [
   ["Libra", 27], ["Aquarius", 35], ["Gemini", 25],
   ["Cancer", 20], ["Scorpio", 28], ["Pisces", 23],
 ];
-
-const level = (s: number) => (s >= 34 ? "peak" : s >= 28 ? "high" : s >= 21 ? "steady" : "low");
 
 export function HeroGrid() {
   const [tick, setTick] = useState(0);
@@ -39,17 +31,17 @@ export function HeroGrid() {
         <div className="grid grid-cols-3 gap-2.5">
           {BASE.map(([zone, base], i) => {
             const score = tick === 0 ? base : base + ((tick * 7 + i * 5) % 7) - 3;
-            const t = level(score);
+            const t = heatLevel(score);
             const enter = `dm-in 0.6s cubic-bezier(.2,.7,.2,1) ${i * 70}ms both`;
             return (
               <div
                 key={zone}
                 className="flex min-h-16 flex-col justify-between gap-2 rounded-[14px] p-3.5"
                 style={{
-                  background: TONE[t][0],
-                  color: TONE[t][1],
+                  background: HEAT[t].bg,
+                  color: HEAT[t].fg,
                   transition: "background-color 0.9s ease, color 0.9s ease",
-                  animation: t === "peak" ? `${enter}, dm-glow 2.4s ease-in-out ${900 + i * 70}ms infinite` : enter,
+                  animation: t === "peak" ? `${enter}, dm-peak-glow 2.4s ease-in-out ${900 + i * 70}ms infinite` : enter,
                 }}
               >
                 <span className="text-xs font-semibold opacity-85">{zone}</span>
@@ -67,15 +59,10 @@ export function HeroGrid() {
         />
       </div>
       <div className="flex flex-wrap gap-4 text-xs text-soft">
-        {[
-          ["#2F45FF", "Peak"],
-          ["#8E9BFF", "High"],
-          ["#2A303C", "Steady"],
-          ["#FF8A5B", "Low"],
-        ].map(([c, l]) => (
-          <span key={l} className="flex items-center gap-1.5">
-            <span className="size-2.5 rounded-[3px]" style={{ background: c }} />
-            {l}
+        {HEAT_LEVELS.map((lvl) => (
+          <span key={lvl} className="flex items-center gap-1.5">
+            <span className="size-2.5 rounded-[3px]" style={{ background: HEAT[lvl].bg }} />
+            {HEAT[lvl].label}
           </span>
         ))}
       </div>

@@ -18,15 +18,9 @@ import {
 } from "@/lib/engine/constants";
 import { calcHouse, formatDegrees, getRashi, istDay, resolveKP } from "@/lib/engine/core";
 import { fmtLongDate, fmtMonthYear, greeting } from "@/lib/format";
+import { ALIGNMENT_RING, CHIP, HEAT, HEAT_LEVELS, heatLevel } from "@/lib/heat";
 import { useChart, useNow } from "@/lib/profile-context";
 
-const LOAD_TONE = {
-  peak: "bg-cobalt text-white",
-  high: "bg-[#B9C3FF] text-ink",
-  steady: "bg-[#EEF0F3] text-ink",
-  low: "bg-[#E5484D] text-white",
-};
-const loadLevel = (s: number) => (s >= 34 ? "peak" : s >= 28 ? "high" : s >= 21 ? "steady" : "low");
 const ELEMENT_DOT = ["#E5484D", "#B45309", "#2F45FF", "#0E7C66"];
 
 export function DashboardView() {
@@ -135,15 +129,10 @@ export function DashboardView() {
               <span className="text-sm text-muted">Element × mode, coloured by load index (DMLI).</span>
             </div>
             <div className="flex flex-wrap gap-3.5 text-xs text-muted">
-              {[
-                ["bg-cobalt", "Peak 34+"],
-                ["bg-[#B9C3FF]", "High 28–33"],
-                ["bg-[#EEF0F3] border border-[#D5D9E0]", "Steady 21–27"],
-                ["bg-[#E5484D]", "Low ≤20"],
-              ].map(([c, l]) => (
-                <span key={l} className="flex items-center gap-1.5">
-                  <span className={cx("size-2.5 rounded-[3px]", c)} />
-                  {l}
+              {HEAT_LEVELS.map((lvl) => (
+                <span key={lvl} className="flex items-center gap-1.5">
+                  <span className="size-2.5 rounded-[3px]" style={{ background: HEAT[lvl].bg }} />
+                  {HEAT[lvl].label} {HEAT[lvl].range}
                 </span>
               ))}
             </div>
@@ -166,15 +155,17 @@ export function DashboardView() {
                     const load = chart.sav[rashi];
                     const house = calcHouse(rashi, lagna);
                     const forming = alignedRashis.has(rashi);
+                    const heat = HEAT[heatLevel(load)];
                     return (
                       <div
                         key={col}
-                        className={cx(
-                          "flex min-h-[104px] flex-col justify-between gap-2.5 rounded-2xl border-2 p-3",
-                          LOAD_TONE[loadLevel(load)],
-                          forming ? "border-lime" : "border-transparent",
-                        )}
-                        style={forming ? { animation: "dm-glow 2.4s ease-in-out infinite" } : undefined}
+                        className="flex min-h-[104px] flex-col justify-between gap-2.5 rounded-2xl border-2 p-3"
+                        style={{
+                          background: heat.bg,
+                          color: heat.fg,
+                          borderColor: forming ? ALIGNMENT_RING : "transparent",
+                          animation: forming ? "dm-cell-align 2s ease-in-out infinite" : undefined,
+                        }}
                       >
                         <span className="flex w-full items-baseline justify-between gap-2">
                           <span className="text-[13px] font-semibold">
@@ -184,10 +175,10 @@ export function DashboardView() {
                         </span>
                         <span className="flex flex-wrap gap-1">
                           {natalIn(rashi).map((p) => (
-                            <Chip key={p} code={PLANET_CODE[p]} title={`${PLANET_NAME[p]} at birth`} />
+                            <Chip key={p} code={PLANET_CODE[p]} title={`${PLANET_NAME[p]} at birth`} onGreen={heat.onGreen} />
                           ))}
                           {liveIn(rashi).map((p) => (
-                            <Chip key={`t-${p}`} code={PLANET_CODE[p]} title={`${PLANET_NAME[p]} live`} live />
+                            <Chip key={`t-${p}`} code={PLANET_CODE[p]} title={`${PLANET_NAME[p]} live`} live onGreen={heat.onGreen} />
                           ))}
                         </span>
                       </div>
@@ -203,7 +194,7 @@ export function DashboardView() {
             {live && <span className="flex items-center gap-1.5"><Chip code="Sa" title="" live /> Live position</span>}
             {live && (
               <span className="flex items-center gap-1.5">
-                <span className="size-3.5 rounded border-2 border-lime bg-ink" /> Alignment within 5°
+                <span className="size-3.5 rounded border-2 bg-[#2C3539]" style={{ borderColor: ALIGNMENT_RING }} /> Alignment within 5°
               </span>
             )}
           </div>
@@ -340,14 +331,13 @@ function Stat({ label, value, note, tone }: { label: string; value: string; note
   );
 }
 
-function Chip({ code, title, live }: { code: string; title: string; live?: boolean }) {
+function Chip({ code, title, live, onGreen }: { code: string; title: string; live?: boolean; onGreen?: boolean }) {
+  const c = live ? (onGreen ? CHIP.liveOnGreen : CHIP.live) : onGreen ? CHIP.natalOnGreen : CHIP.natal;
   return (
     <span
       title={title || undefined}
-      className={cx(
-        "rounded-md border px-1.5 py-0.5 font-mono text-[11px] font-semibold",
-        live ? "border-ink bg-lime text-ink" : "border-ink bg-ink text-white",
-      )}
+      className="rounded-md px-1.5 py-0.5 font-mono text-[11px] font-semibold"
+      style={{ background: c.bg, color: c.fg, animation: live ? "dm-halo 1.5s ease-in-out infinite" : undefined }}
     >
       {code}
     </span>
