@@ -19,7 +19,7 @@ export function HeroGrid() {
   }, []);
 
   return (
-    <div className="flex min-w-0 flex-[1_1_420px] flex-col gap-4.5 rounded-[28px] border border-ink-3 bg-ink-2 p-7">
+    <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between font-mono text-xs tracking-[0.08em] text-muted-2 uppercase">
         <span>Energy Grid</span>
         <span className="flex items-center gap-2">
@@ -36,7 +36,7 @@ export function HeroGrid() {
             return (
               <div
                 key={zone}
-                className="flex min-h-16 flex-col justify-between gap-2 rounded-[14px] p-3.5"
+                className="flex min-h-[72px] flex-col justify-between gap-2 rounded-xl p-3"
                 style={{
                   background: heatSwatch(t, "dark").bg,
                   color: heatSwatch(t, "dark").fg,
