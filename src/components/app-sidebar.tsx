@@ -1,8 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
+import { useProfiles } from "@/lib/profile-context";
 import { Logo } from "./logo";
+import { ThemeToggle } from "./theme-toggle";
 import { cx } from "./ui";
 
 const NAV = [
@@ -16,14 +19,18 @@ const NAV = [
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { ready, user, username, signOut } = useAuth();
+  const { syncing, syncError } = useProfiles();
   return (
-    <div className="bg-ink lg:w-[260px] lg:shrink-0">
+    <div className="bg-contrast lg:w-[260px] lg:shrink-0">
       <nav
         aria-label="App"
         className="flex w-full flex-col gap-6 px-4 py-6 text-[#C9CED8] lg:sticky lg:top-0 lg:h-screen lg:gap-7 lg:py-7"
       >
-        <div className="px-3">
+        <div className="flex items-center justify-between gap-3 pl-3">
           <Logo size={24} />
+          <ThemeToggle onDark />
         </div>
         <div className="flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">
           {NAV.map((item) => {
@@ -46,12 +53,50 @@ export function AppSidebar() {
             );
           })}
         </div>
-        <div className="mt-auto hidden flex-col gap-2.5 rounded-2xl border border-ink-3 bg-ink-2 p-4 lg:flex">
-          <span className="text-sm font-semibold text-paper">Add another profile</span>
-          <span className="text-[13px] leading-normal text-soft">Track family, partners or your team.</span>
-          <Link href="/start" className="self-start rounded-full bg-lime px-3.5 py-2.5 text-[13px] font-semibold text-ink">
-            New profile
-          </Link>
+        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-ink-3 bg-ink-2 p-4 lg:mt-auto lg:flex-col lg:items-stretch">
+          {!ready ? (
+            <span className="text-sm text-soft">Checking sign-in…</span>
+          ) : user ? (
+            <>
+              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <span className="text-xs text-muted-2">Signed in as</span>
+                <span className="truncate text-sm font-semibold text-paper">@{username ?? user.email}</span>
+                <span className={cx("text-xs", syncError ? "text-coral" : "text-soft")}>
+                  {syncError ? "Couldn’t sync profiles" : syncing ? "Syncing profiles…" : "Profiles synced to your account"}
+                </span>
+              </div>
+              <div className="flex gap-2">
+                <Link href="/start" className="flex-1 rounded-full bg-signal px-3.5 py-2.5 text-center text-[13px] font-semibold whitespace-nowrap text-ink">
+                  New profile
+                </Link>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await signOut();
+                    router.push("/");
+                  }}
+                  className="cursor-pointer flex-1 rounded-full border border-ink-3 px-3.5 py-2.5 text-center text-[13px] font-semibold whitespace-nowrap text-soft hover:text-white"
+                >
+                  Sign out
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <span className="text-sm font-semibold text-paper">Save your profiles</span>
+                <span className="text-[13px] leading-normal text-soft">Sign in to keep them on every device.</span>
+              </div>
+              <div className="flex gap-2">
+                <Link href="/login" className="flex-1 rounded-full bg-signal px-3.5 py-2.5 text-center text-[13px] font-semibold whitespace-nowrap text-ink">
+                  Sign in
+                </Link>
+                <Link href="/signup" className="flex-1 rounded-full border border-ink-3 px-3.5 py-2.5 text-center text-[13px] font-semibold whitespace-nowrap text-soft hover:text-white">
+                  Create account
+                </Link>
+              </div>
+            </>
+          )}
         </div>
       </nav>
     </div>

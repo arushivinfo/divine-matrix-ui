@@ -10,16 +10,16 @@ export function LogoMark({ size = 28 }: { size?: number }) {
           <rect key={`${x}-${y}`} x={x} y={y} width="5" height="5" rx="1.5" />
         ))}
       </g>
-      <rect x="22.8" y="0" width="5" height="5" rx="1.5" fill="#D4FF3A" />
+      <rect x="22.8" y="0" width="5" height="5" rx="1.5" fill="#32D583" />
       <rect x="7.6" y="8.5" width="5" height="5" rx="1.5" fill="#2F45FF" />
-      <rect x="15.2" y="17" width="5" height="5" rx="1.5" fill="#D4FF3A" />
+      <rect x="15.2" y="17" width="5" height="5" rx="1.5" fill="#32D583" />
     </svg>
   );
 }
 
-export function Logo({ href = "/", size = 28 }: { href?: string; size?: number }) {
+export function Logo({ href = "/", size = 28, className = "text-paper" }: { href?: string; size?: number; className?: string }) {
   return (
-    <Link href={href} className="flex items-center gap-2.5 text-paper no-underline">
+    <Link href={href} className={`flex items-center gap-2.5 no-underline ${className}`}>
       <LogoMark size={size} />
       <span className="font-display text-[19px] font-extrabold tracking-tight">Divine Matrix</span>
     </Link>

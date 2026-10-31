@@ -1,9 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { EngineNotice } from "@/components/engine-notice";
 import { Badge, Bar, Card, PageHeader, Ring, Skeleton, cx, type Tone } from "@/components/ui";
-import { TEAM_TYPES, compatibility, teamSynergy, type FrictionStatus } from "@/lib/engine/relations";
-import { chartFor, useProfiles } from "@/lib/profile-context";
+import { TEAM_TYPES, fetchCompatibility, fetchTeam, useEngine, type FrictionStatus } from "@/lib/engine-api";
+import { useProfiles } from "@/lib/profile-context";
+import { birthInput, type Profile } from "@/lib/profiles";
 
 const STATUS: Record<FrictionStatus, { tone: Tone; label: string; bar: string }> = {
   harmonious: { tone: "good", label: "In flow", bar: "#2F45FF" },
@@ -11,9 +13,9 @@ const STATUS: Record<FrictionStatus, { tone: Tone; label: string; bar: string }>
   neutral: { tone: "warn", label: "Some friction", bar: "#B45309" },
   clash: { tone: "bad", label: "Clash", bar: "#C9372C" },
 };
-const ELEMENT_COLOR = { Fire: "#FF8A5B", Earth: "#D4FF3A", Air: "#8E9BFF", Water: "#5FD3B5" };
+const ELEMENT_COLOR = { Fire: "#FF8A5B", Earth: "#32D583", Air: "#8E9BFF", Water: "#7CD4FD" };
 
-const selectClass = "h-13 rounded-2xl border border-[#D5D9E0] bg-white px-3.5 text-[15px] text-ink";
+const selectClass = "h-13 rounded-2xl border border-line-strong bg-surface px-3.5 text-[15px] text-fg";
 
 export function CompatibilityView() {
   const { ready, profile, profiles } = useProfiles();
@@ -25,11 +27,15 @@ export function CompatibilityView() {
   const b = profiles.find((p) => p.id === (bId ?? profiles.find((x) => x.id !== a.id)?.id)) ?? profiles[1];
   const teamIds = team ?? profiles.map((p) => p.id);
 
-  const match = useMemo(() => (ready && a.id !== b.id ? compatibility(chartFor(a), chartFor(b)) : null), [ready, a, b]);
-  const synergy = useMemo(() => {
-    const members = profiles.filter((p) => teamIds.includes(p.id));
-    return ready && members.length >= 2 ? teamSynergy(members.map((p) => ({ name: p.name, chart: chartFor(p) }))) : null;
-  }, [ready, profiles, teamIds]);
+  const members = profiles.filter((p) => teamIds.includes(p.id));
+  const sig = (p: Profile) => `${p.dob}|${p.tob}|${p.cityId}`;
+
+  const pair = useEngine(ready && a.id !== b.id ? `${sig(a)}~${sig(b)}` : null, () => fetchCompatibility(birthInput(a), birthInput(b)));
+  const teamResult = useEngine(ready && members.length >= 2 ? members.map((p) => `${p.name}:${sig(p)}`).join(",") : null, () =>
+    fetchTeam(members.map((p) => ({ name: p.name, birth: birthInput(p) }))),
+  );
+  const match = pair.data;
+  const synergy = teamResult.data;
 
   if (!ready) return <Skeleton className="h-[640px]" />;
 
@@ -61,7 +67,7 @@ export function CompatibilityView() {
         </div>
         {match ? (
           <div className="flex min-w-0 flex-[1_1_280px] items-center gap-5">
-            <Ring value={match.match} size={120} stroke={12} color="#2F45FF" track="#EEF0F3" label={`Match ${match.match} percent`}>
+            <Ring value={match.match} size={120} stroke={12} color="#2F45FF" track="var(--ring-track)" label={`Match ${match.match} percent`}>
               <span className="font-display text-3xl font-extrabold">{match.match}%</span>
             </Ring>
             <div className="flex flex-col gap-1.5">
@@ -69,6 +75,12 @@ export function CompatibilityView() {
               <span className="text-sm leading-normal text-muted">Weighted on Moon (emotions), ascendant (outlook) and Sun (drive) elements.</span>
             </div>
           </div>
+        ) : pair.error ? (
+          <div className="flex-[1_1_280px]">
+            <EngineNotice compact error={pair.error} onRetry={pair.retry} />
+          </div>
+        ) : pair.loading ? (
+          <p className="flex-[1_1_280px] animate-pulse text-sm text-muted">Calculating match…</p>
         ) : (
           <p className="flex-[1_1_280px] text-sm text-muted">Pick two different people to compare.</p>
         )}
@@ -86,7 +98,7 @@ export function CompatibilityView() {
                 {f.key === "moon" ? "Moon" : f.key === "lagna" ? "Ascendant" : "Sun"}: {f.pair[0]} ↔ {f.pair[1]}
               </span>
               <Bar value={f.flow} color={STATUS[f.status].bar} />
-              <p className="text-sm text-[#3A4150]">{f.label}</p>
+              <p className="text-sm text-fg-2">{f.label}</p>
             </Card>
           ))}
         </div>
@@ -105,10 +117,10 @@ export function CompatibilityView() {
               key={p.id}
               className={cx(
                 "flex min-h-11 cursor-pointer items-center gap-2 rounded-full border px-4 text-sm font-semibold",
-                on ? "border-ink bg-ink text-white" : "border-[#D5D9E0] bg-white",
+                on ? "border-fg bg-fg text-bg" : "border-line-strong bg-surface",
               )}
             >
-              <input type="checkbox" checked={on} onChange={() => toggle(p.id)} className="accent-lime" />
+              <input type="checkbox" checked={on} onChange={() => toggle(p.id)} className="accent-signal" />
               {p.name}
             </label>
           );
@@ -116,9 +128,9 @@ export function CompatibilityView() {
       </fieldset>
 
       {synergy ? (
-        <section className="flex flex-wrap gap-8 rounded-3xl bg-ink p-7 text-paper">
+        <section className="flex flex-wrap gap-8 rounded-3xl bg-contrast p-7 text-paper">
           <div className="flex min-w-0 flex-[1_1_320px] flex-col gap-4">
-            <span className="font-mono text-xs tracking-[0.12em] text-lime uppercase">Team type</span>
+            <span className="font-mono text-xs tracking-[0.12em] text-signal uppercase">Team type</span>
             <span className="font-display text-3xl font-extrabold">{TEAM_TYPES[synergy.type].name}</span>
             <span className="text-[15px] leading-relaxed text-soft">
               Strength: {TEAM_TYPES[synergy.type].strength}. Risk: {TEAM_TYPES[synergy.type].risk}.
@@ -146,11 +158,15 @@ export function CompatibilityView() {
                   <span className="font-semibold">{m.name}</span>
                 </span>
                 <span className="text-xs text-muted-2">Leads with {m.dominant}</span>
-                <span className="text-sm font-semibold text-lime">{m.role}</span>
+                <span className="text-sm font-semibold text-signal">{m.role}</span>
               </div>
             ))}
           </div>
         </section>
+      ) : teamResult.error ? (
+        <EngineNotice error={teamResult.error} onRetry={teamResult.retry} />
+      ) : teamResult.loading ? (
+        <Skeleton className="h-[360px]" />
       ) : (
         <p className="text-sm text-muted">Select at least two members to analyse the team.</p>
       )}

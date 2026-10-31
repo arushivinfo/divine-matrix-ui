@@ -10,6 +10,7 @@
     "build:pages": "PAGES_BASE_PATH=/divine-matrix-ui next build"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
     "astronomy-engine": "^2.1.19",
     "next": "16.4.3",
     "react": "19.3.0",

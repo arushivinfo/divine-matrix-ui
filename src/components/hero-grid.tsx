@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { HEAT, HEAT_LEVELS, heatLevel } from "@/lib/heat";
+import { HEAT_INFO, HEAT_LEVELS, heatLevel, heatSwatch } from "@/lib/heat";
 
 /** Illustrative load values for the marketing grid (not a real profile). */
 const BASE: [string, number][] = [
@@ -19,11 +19,11 @@ export function HeroGrid() {
   }, []);
 
   return (
-    <div className="flex min-w-0 flex-[1_1_420px] flex-col gap-4.5 rounded-[28px] border border-ink-3 bg-ink-2 p-7">
-      <div className="flex items-center justify-between font-mono text-xs tracking-[0.08em] text-muted-2 uppercase">
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between font-mono text-xs tracking-[0.08em] text-fg-muted uppercase">
         <span>Energy Grid</span>
         <span className="flex items-center gap-2">
-          <span className="size-2 rounded-full bg-lime" style={{ animation: "dm-pulse 1.8s ease-out infinite" }} />
+          <span className="size-2 rounded-full bg-signal" style={{ animation: "dm-pulse 1.8s ease-out infinite" }} />
           Live · Today
         </span>
       </div>
@@ -36,10 +36,10 @@ export function HeroGrid() {
             return (
               <div
                 key={zone}
-                className="flex min-h-16 flex-col justify-between gap-2 rounded-[14px] p-3.5"
+                className="flex min-h-[72px] flex-col justify-between gap-2 rounded-xl p-3"
                 style={{
-                  background: HEAT[t].bg,
-                  color: HEAT[t].fg,
+                  background: heatSwatch(t).bg,
+                  color: heatSwatch(t).fg,
                   transition: "background-color 0.9s ease, color 0.9s ease",
                   animation: t === "peak" ? `${enter}, dm-peak-glow 2.4s ease-in-out ${900 + i * 70}ms infinite` : enter,
                 }}
@@ -54,15 +54,15 @@ export function HeroGrid() {
         </div>
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 h-0.5 bg-lime opacity-55"
-          style={{ boxShadow: "0 0 14px 2px rgba(212,255,58,.6)", animation: "dm-scan 3.6s linear infinite" }}
+          className="pointer-events-none absolute inset-x-0 h-0.5 bg-signal opacity-55"
+          style={{ boxShadow: "0 0 14px 2px rgba(50,213,131,.6)", animation: "dm-scan 3.6s linear infinite" }}
         />
       </div>
-      <div className="flex flex-wrap gap-4 text-xs text-soft">
+      <div className="flex flex-wrap gap-4 text-xs text-fg-soft">
         {HEAT_LEVELS.map((lvl) => (
           <span key={lvl} className="flex items-center gap-1.5">
-            <span className="size-2.5 rounded-[3px]" style={{ background: HEAT[lvl].bg }} />
-            {HEAT[lvl].label}
+            <span className="size-2.5 rounded-[3px]" style={{ background: heatSwatch(lvl).bg }} />
+            {HEAT_INFO[lvl].label}
           </span>
         ))}
       </div>

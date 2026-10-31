@@ -7,7 +7,7 @@ import { isUnderAgeLimit } from "@/lib/engine/core";
 import { useProfiles } from "@/lib/profile-context";
 import { CITIES, PRESETS, cityById, type Profile } from "@/lib/profiles";
 
-const inputClass = "h-13 rounded-2xl border border-[#D5D9E0] bg-white px-4 text-base text-ink";
+const inputClass = "h-13 rounded-2xl border border-line-strong bg-surface px-4 text-base text-fg";
 
 export function StartForm() {
   const router = useRouter();
@@ -17,6 +17,7 @@ export function StartForm() {
   const [tob, setTob] = useState("");
   const [cityId, setCityId] = useState(CITIES[0].id);
   const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
   const city = cityById(cityId);
 
@@ -25,7 +26,7 @@ export function StartForm() {
     router.push("/dashboard");
   }
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim() || !dob || !tob) {
       setError("Please fill in your name, date and time of birth.");
@@ -35,14 +36,20 @@ export function StartForm() {
       setError("Divine Matrix doesn’t analyse charts for children aged two or under.");
       return;
     }
-    save({ id: `p-${Date.now()}`, name: name.trim(), dob, tob, cityId });
-    router.push("/dashboard");
+    setBusy(true);
+    try {
+      await save({ id: `p-${Date.now()}`, name: name.trim(), dob, tob, cityId });
+      router.push("/dashboard");
+    } catch (err) {
+      setError(`Couldn’t save your profile: ${(err as Error).message}`);
+      setBusy(false);
+    }
   }
 
   return (
     <form onSubmit={submit} className="flex w-full max-w-[560px] flex-col gap-7" noValidate>
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-xs tracking-[0.12em] text-cobalt uppercase">Step 1 of 1</span>
+        <span className="font-mono text-xs tracking-[0.12em] text-link uppercase">Step 1 of 1</span>
         <h2 className="font-display text-4xl font-extrabold tracking-[-0.03em]">Create your matrix</h2>
       </div>
 
@@ -54,7 +61,7 @@ export function StartForm() {
               key={p.id}
               type="button"
               onClick={() => openPreset(p)}
-              className="min-h-11 cursor-pointer rounded-full border border-[#D5D9E0] bg-white px-4.5 text-sm font-semibold hover:border-ink"
+              className="min-h-11 cursor-pointer rounded-full border border-line-strong bg-surface px-4.5 text-sm font-semibold hover:border-ink"
             >
               {p.name}
             </button>
@@ -92,8 +99,12 @@ export function StartForm() {
         <p role="alert" className="rounded-2xl bg-red-soft px-4 py-3 text-sm font-medium text-red">{error}</p>
       )}
 
-      <button type="submit" className="flex h-14 cursor-pointer items-center justify-center gap-2.5 rounded-full bg-cobalt font-semibold text-white">
-        Build my matrix
+      <button
+        type="submit"
+        disabled={busy}
+        className="flex h-14 cursor-pointer items-center justify-center gap-2.5 rounded-full bg-cobalt font-semibold text-white disabled:cursor-wait disabled:opacity-70"
+      >
+        {busy ? "Saving…" : "Build my matrix"}
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M5 12h14M13 6l6 6-6 6" />
         </svg>

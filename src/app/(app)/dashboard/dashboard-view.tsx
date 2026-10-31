@@ -1,9 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { EngineNotice } from "@/components/engine-notice";
 import { ProfileSwitcher } from "@/components/profile-switcher";
 import { Badge, Card, CardTitle, ClassicTag, Ring, Segmented, Skeleton, cx } from "@/components/ui";
-import { analyse } from "@/lib/engine/analysis";
 import {
   ALIGNMENT_ADVICE,
   ELEMENTS,
@@ -16,10 +16,13 @@ import {
   RASHI_TO_RC,
   type PlanetId,
 } from "@/lib/engine/constants";
-import { calcHouse, formatDegrees, getRashi, istDay, resolveKP } from "@/lib/engine/core";
+import { calcHouse, dayNoon, findAlignments, formatDegrees, getRashi, istDay, resolveKP, transitFor } from "@/lib/engine/core";
+import { currentPeriod, vimshottari, vimshottariSub } from "@/lib/engine/dasha";
+import { fetchAnalysis, useDebounced, useEngine } from "@/lib/engine-api";
 import { fmtLongDate, fmtMonthYear, greeting } from "@/lib/format";
-import { ALIGNMENT_RING, CHIP, HEAT, HEAT_LEVELS, heatLevel } from "@/lib/heat";
+import { ALIGNMENT_RING, CHIP, HEAT_INFO, HEAT_LEVELS, heatLevel, heatSwatch } from "@/lib/heat";
 import { useChart, useNow } from "@/lib/profile-context";
+import { birthInput } from "@/lib/profiles";
 
 const ELEMENT_DOT = ["#E5484D", "#B45309", "#2F45FF", "#0E7C66"];
 
@@ -31,9 +34,25 @@ export function DashboardView() {
 
   const today = now ? istDay(now) : null;
   const day = now ? istDay(now, days) : null;
-  const a = useMemo(() => (chart && day ? analyse(chart, day) : null), [chart, day]);
+  // Standard astronomy stays in the browser so the grid and slider are instant.
+  const livePos = useMemo(() => (day ? transitFor(day) : null), [day]);
+  const alignments = useMemo(() => (chart && livePos ? findAlignments(chart.positions, livePos) : []), [chart, livePos]);
+  const chapter = useMemo(() => {
+    if (!chart || !day) return null;
+    const md = currentPeriod(vimshottari(chart), dayNoon(day));
+    return { md, ad: md ? currentPeriod(vimshottariSub(md), dayNoon(day)) : undefined };
+  }, [chart, day]);
 
-  if (!chart || !now || !a || !today) {
+  // Scores come from the private engine; wait until the slider settles before asking.
+  const scoreDay = useDebounced(day);
+  const birth = birthInput(profile);
+  const engine = useEngine(
+    chart && scoreDay ? `${birth.dob}|${birth.tob}|${birth.lat}|${birth.lon}|${scoreDay}` : null,
+    () => fetchAnalysis(birth, scoreDay!),
+  );
+  const scores = engine.data;
+
+  if (!chart || !now || !livePos || !chapter || !today) {
     return (
       <>
         <Skeleton className="h-20" />
@@ -45,18 +64,18 @@ export function DashboardView() {
 
   const lagna = chart.lagna.rashi;
   const natalIn = (rashi: number) => PLANET_IDS.filter((p) => getRashi(chart.positions[p].sid) === rashi);
-  const liveIn = (rashi: number) => (live ? PLANET_IDS.filter((p) => getRashi(a.live[p].sid) === rashi) : []);
-  const alignedRashis = new Set(live ? a.alignments.map((al) => getRashi(chart.positions[al.natal].sid)) : []);
-  const activeSectors = new Set(live ? a.alignments.map((al) => al.natal) : []);
-  const alerts = dedupe(a.alignments).slice(0, 4);
+  const liveIn = (rashi: number) => (live ? PLANET_IDS.filter((p) => getRashi(livePos[p].sid) === rashi) : []);
+  const alignedRashis = new Set(live ? alignments.map((al) => getRashi(chart.positions[al.natal].sid)) : []);
+  const activeSectors = new Set(live ? alignments.map((al) => al.natal) : []);
+  const alerts = dedupe(alignments).slice(0, 4);
   const dayLabel = days === 0 ? "Today" : `${days > 0 ? "+" : "−"}${Math.abs(days)} ${Math.abs(days) === 1 ? "day" : "days"}`;
 
   const rings = [
-    { label: "Overall", value: a.overall.score, color: "#D4FF3A" },
-    { label: "Wealth", value: a.overall.parts[0].value, color: "#5FD3B5" },
-    { label: "Harmony", value: a.overall.parts[1].value, color: "#FFB547" },
-    { label: "Learning", value: a.overall.parts[4].value, color: "#8E9BFF" },
-    { label: "Wellbeing", value: a.overall.parts[5].value, color: "#FF8A5B" },
+    { label: "Overall", value: scores?.overall.score, color: "#32D583" },
+    { label: "Wealth", value: scores?.overall.parts[0].value, color: "#7CD4FD" },
+    { label: "Harmony", value: scores?.overall.parts[1].value, color: "#FFB547" },
+    { label: "Learning", value: scores?.overall.parts[4].value, color: "#8E9BFF" },
+    { label: "Wellbeing", value: scores?.overall.parts[5].value, color: "#FF8A5B" },
   ];
 
   return (
@@ -82,40 +101,48 @@ export function DashboardView() {
         </div>
       </div>
 
-      <section aria-label="At a glance" className="flex flex-wrap items-center justify-between gap-3 rounded-[28px] bg-ink px-6 py-5 text-paper">
+      <section aria-label="At a glance" className="flex flex-wrap items-center justify-between gap-3 rounded-[28px] bg-contrast px-6 py-5 text-paper">
         <span className="font-mono text-xs tracking-[0.12em] text-muted-2 uppercase">
           At a glance{days !== 0 && ` · ${dayLabel}`}
         </span>
         <div className="grid w-full grid-cols-3 gap-4 sm:flex sm:w-auto sm:flex-1 sm:flex-wrap sm:justify-end sm:gap-6">
           {rings.map((r) => (
             <div key={r.label} className="flex flex-col items-center gap-1.5 sm:flex-row sm:gap-2.5">
-              <Ring value={r.value} color={r.color} label={`${r.label} ${r.value} of 100`}>
-                <span className="font-mono text-[15px] font-semibold">{r.value}</span>
+              <Ring value={r.value ?? 0} color={r.color} label={r.value === undefined ? `${r.label} loading` : `${r.label} ${r.value} of 100`}>
+                <span className={cx("font-mono text-[15px] font-semibold", r.value === undefined && "animate-pulse text-muted-2")}>
+                  {r.value ?? "··"}
+                </span>
               </Ring>
               <span className="text-sm font-semibold">{r.label}</span>
             </div>
           ))}
         </div>
       </section>
+      {engine.error && <EngineNotice compact error={engine.error} onRetry={engine.retry} />}
 
       <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
-        <div className="flex flex-col gap-1.5 rounded-[20px] bg-ink px-6 py-5 text-paper">
+        <div className="flex flex-col gap-1.5 rounded-[20px] bg-contrast px-6 py-5 text-paper">
           <span className="text-[13px] text-soft">
-            Anchor zone <span className="font-mono text-[11px] text-lime">· Lagna</span>
+            Anchor zone <span className="font-mono text-[11px] text-signal">· Lagna</span>
           </span>
           <span className="font-display text-[26px] font-extrabold">
-            {RASHI_EN[lagna]} <span className="text-lime">·</span> {ELEMENTS[lagna % 4]}
+            {RASHI_EN[lagna]} <span className="text-signal">·</span> {ELEMENTS[lagna % 4]}
           </span>
           <span className="font-mono text-[13px] text-soft">{formatDegrees(chart.lagna.sid)} · Whole-sign houses</span>
         </div>
-        <Stat label="Overall score" value={`${a.overall.score} / 100`} note={a.overall.verdict} tone="text-green" />
+        <Stat label="Overall score" value={scores ? `${scores.overall.score} / 100` : "…"} note={scores?.overall.verdict ?? "Calculating"} tone="text-green" />
         <Stat
           label="Current chapter"
-          value={a.md ? `${a.md.label}${a.ad ? " · " + a.ad.label : ""}` : "—"}
-          note={a.ad ? `Until ${fmtMonthYear(a.ad.end)}` : ""}
+          value={chapter.md ? `${chapter.md.label}${chapter.ad ? " · " + chapter.ad.label : ""}` : "—"}
+          note={chapter.ad ? `Until ${fmtMonthYear(chapter.ad.end)}` : ""}
           tone="text-muted"
         />
-        <Stat label="Best business window" value={`${a.hours.window.from} – ${a.hours.window.to}`} note="Hora-based" tone="text-cobalt" />
+        <Stat
+          label="Best business window"
+          value={scores ? `${scores.hours.window.from} – ${scores.hours.window.to}` : "…"}
+          note="Hora-based"
+          tone="text-link"
+        />
       </div>
 
       <div className="flex flex-wrap items-start gap-6">
@@ -131,8 +158,8 @@ export function DashboardView() {
             <div className="flex flex-wrap gap-3.5 text-xs text-muted">
               {HEAT_LEVELS.map((lvl) => (
                 <span key={lvl} className="flex items-center gap-1.5">
-                  <span className="size-2.5 rounded-[3px]" style={{ background: HEAT[lvl].bg }} />
-                  {HEAT[lvl].label} {HEAT[lvl].range}
+                  <span className="size-2.5 rounded-[3px]" style={{ background: heatSwatch(lvl).bg }} />
+                  {HEAT_INFO[lvl].label} {HEAT_INFO[lvl].range}
                 </span>
               ))}
             </div>
@@ -155,7 +182,7 @@ export function DashboardView() {
                     const load = chart.sav[rashi];
                     const house = calcHouse(rashi, lagna);
                     const forming = alignedRashis.has(rashi);
-                    const heat = HEAT[heatLevel(load)];
+                    const heat = heatSwatch(heatLevel(load));
                     return (
                       <div
                         key={col}
@@ -175,10 +202,10 @@ export function DashboardView() {
                         </span>
                         <span className="flex flex-wrap gap-1">
                           {natalIn(rashi).map((p) => (
-                            <Chip key={p} code={PLANET_CODE[p]} title={`${PLANET_NAME[p]} at birth`} onGreen={heat.onGreen} />
+                            <Chip key={p} code={PLANET_CODE[p]} title={`${PLANET_NAME[p]} at birth`} />
                           ))}
                           {liveIn(rashi).map((p) => (
-                            <Chip key={`t-${p}`} code={PLANET_CODE[p]} title={`${PLANET_NAME[p]} live`} live onGreen={heat.onGreen} />
+                            <Chip key={`t-${p}`} code={PLANET_CODE[p]} title={`${PLANET_NAME[p]} live`} live />
                           ))}
                         </span>
                       </div>
@@ -194,12 +221,12 @@ export function DashboardView() {
             {live && <span className="flex items-center gap-1.5"><Chip code="Sa" title="" live /> Live position</span>}
             {live && (
               <span className="flex items-center gap-1.5">
-                <span className="size-3.5 rounded border-2 bg-[#2C3539]" style={{ borderColor: ALIGNMENT_RING }} /> Alignment within 5°
+                <span className="size-3.5 rounded border-2 bg-heat-base" style={{ borderColor: ALIGNMENT_RING }} /> Alignment within 5°
               </span>
             )}
           </div>
 
-          <div className={cx("flex flex-wrap items-center gap-4 rounded-2xl bg-paper px-5 py-4", !live && "opacity-50")}>
+          <div className={cx("flex flex-wrap items-center gap-4 rounded-2xl bg-subtle px-5 py-4", !live && "opacity-50")}>
             <label htmlFor="slider" className="flex items-center gap-2 text-sm font-semibold">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2F45FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M12 7v5l3 2M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -221,7 +248,7 @@ export function DashboardView() {
               {dayLabel} <span className="text-muted">· {day}</span>
             </span>
             {days !== 0 && (
-              <button type="button" onClick={() => setDays(0)} className="cursor-pointer text-sm font-semibold text-cobalt">
+              <button type="button" onClick={() => setDays(0)} className="cursor-pointer text-sm font-semibold text-link">
                 Reset
               </button>
             )}
@@ -234,7 +261,7 @@ export function DashboardView() {
               <h2 className="font-display text-xl font-bold">
                 Live alerts <span className="font-mono text-xs font-semibold text-muted-2">· Gochar</span>
               </h2>
-              <Badge tone="lime">{live ? `${alerts.length} active` : "Off"}</Badge>
+              <Badge tone="signal">{live ? `${alerts.length} active` : "Off"}</Badge>
             </div>
             {!live && <p className="text-sm text-soft">Switch to Live overlay to see alignments.</p>}
             {live && alerts.length === 0 && <p className="text-sm text-soft">No live body is within 5° of a birth position on this day.</p>}
@@ -244,7 +271,7 @@ export function DashboardView() {
                   <span
                     className={cx(
                       "self-start rounded-md px-2 py-0.5 font-mono text-[11px] font-semibold tracking-[0.08em] uppercase",
-                      al.exact ? "bg-lime text-ink" : "bg-cobalt text-white",
+                      al.exact ? "bg-signal text-ink" : "bg-cobalt text-white",
                     )}
                   >
                     {al.exact ? "Exact" : "Forming"}
@@ -265,9 +292,9 @@ export function DashboardView() {
               {PLANET_IDS.map((p) => {
                 const on = activeSectors.has(p);
                 return (
-                  <div key={p} className={cx("flex flex-col gap-1 rounded-[14px] border p-3", on ? "border-[#C9D0FF] bg-cobalt-soft" : "border-line")}>
+                  <div key={p} className={cx("flex flex-col gap-1 rounded-[14px] border p-3", on ? "border-cobalt/30 bg-cobalt-soft" : "border-line")}>
                     <span className="text-sm font-semibold">{LIFE_SECTOR[p]}</span>
-                    <span className={cx("text-xs font-semibold", on ? "text-cobalt" : "text-muted")}>{on ? "Active" : "Steady"}</span>
+                    <span className={cx("text-xs font-semibold", on ? "text-link" : "text-muted")}>{on ? "Active" : "Steady"}</span>
                   </div>
                 );
               })}
@@ -295,12 +322,12 @@ export function DashboardView() {
                 const kp = resolveKP(sid);
                 return (
                   <tr key={p}>
-                    <td className="border-b border-[#F0F2F5] p-3 font-semibold">{PLANET_NAME[p]}</td>
-                    <td className="border-b border-[#F0F2F5] p-3 font-mono text-[13px]">{formatDegrees(sid)}</td>
-                    <td className="border-b border-[#F0F2F5] p-3">{RASHI_EN[rashi]}</td>
-                    <td className="border-b border-[#F0F2F5] p-3">{calcHouse(rashi, lagna)}</td>
-                    <td className="border-b border-[#F0F2F5] p-3 text-muted">{ELEMENTS[row]} · {MODES[col]}</td>
-                    <td className="border-b border-[#F0F2F5] p-3 font-mono text-[13px] text-cobalt">
+                    <td className="border-b border-line-soft p-3 font-semibold">{PLANET_NAME[p]}</td>
+                    <td className="border-b border-line-soft p-3 font-mono text-[13px]">{formatDegrees(sid)}</td>
+                    <td className="border-b border-line-soft p-3">{RASHI_EN[rashi]}</td>
+                    <td className="border-b border-line-soft p-3">{calcHouse(rashi, lagna)}</td>
+                    <td className="border-b border-line-soft p-3 text-muted">{ELEMENTS[row]} · {MODES[col]}</td>
+                    <td className="border-b border-line-soft p-3 font-mono text-[13px] text-link">
                       {PLANET_CODE[kp.starLord]} / {PLANET_CODE[kp.subLord]}
                     </td>
                   </tr>
@@ -323,7 +350,7 @@ function Row({ children }: { children: React.ReactNode }) {
 
 function Stat({ label, value, note, tone }: { label: string; value: string; note: string; tone: string }) {
   return (
-    <div className="flex flex-col gap-1.5 rounded-[20px] border border-line bg-white px-6 py-5">
+    <div className="flex flex-col gap-1.5 rounded-[20px] border border-line bg-surface px-6 py-5">
       <span className="text-[13px] text-muted">{label}</span>
       <span className="font-display text-[26px] font-extrabold">{value}</span>
       <span className={cx("text-[13px] font-semibold", tone)}>{note}</span>
@@ -331,8 +358,8 @@ function Stat({ label, value, note, tone }: { label: string; value: string; note
   );
 }
 
-function Chip({ code, title, live, onGreen }: { code: string; title: string; live?: boolean; onGreen?: boolean }) {
-  const c = live ? (onGreen ? CHIP.liveOnGreen : CHIP.live) : onGreen ? CHIP.natalOnGreen : CHIP.natal;
+function Chip({ code, title, live }: { code: string; title: string; live?: boolean }) {
+  const c = live ? CHIP.live : CHIP.natal;
   return (
     <span
       title={title || undefined}

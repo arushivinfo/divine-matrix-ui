@@ -70,10 +70,10 @@ export function ChaptersView() {
         }
       />
 
-      <section className="flex flex-col gap-6 rounded-3xl bg-ink p-7 text-paper">
+      <section className="flex flex-col gap-6 rounded-3xl bg-contrast p-7 text-paper">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div className="flex flex-col gap-2">
-            <span className="font-mono text-xs tracking-[0.12em] text-lime uppercase">
+            <span className="font-mono text-xs tracking-[0.12em] text-signal uppercase">
               Running now · {LEVEL_NAMES[system][path.length]}
             </span>
             <span className="font-display text-4xl font-extrabold tracking-tight">
@@ -97,7 +97,7 @@ export function ChaptersView() {
                   title={`${p.label} · ${fmtMonthYear(p.start)} → ${fmtMonthYear(p.end)}`}
                   className={cx(
                     "flex min-w-0 items-center justify-center overflow-hidden rounded-lg font-mono text-[11px] font-semibold",
-                    st === "now" ? "bg-lime text-ink" : st === "done" ? "bg-ink-3 text-muted-2" : "bg-cobalt text-white",
+                    st === "now" ? "bg-signal text-ink" : st === "done" ? "bg-ink-3 text-muted-2" : "bg-cobalt text-white",
                   )}
                   style={{ flex: `${p.years} 1 0` }}
                 >
@@ -120,7 +120,7 @@ export function ChaptersView() {
         <button
           type="button"
           onClick={() => setPath([])}
-          className="min-h-9 cursor-pointer rounded-full border border-[#D5D9E0] bg-white px-3.5 font-semibold text-cobalt"
+          className="min-h-9 cursor-pointer rounded-full border border-line-strong bg-surface px-3.5 font-semibold text-link"
         >
           All chapters
         </button>
@@ -153,21 +153,21 @@ export function ChaptersView() {
                 "flex min-h-[150px] flex-col gap-2.5 rounded-[20px] border-2 p-4.5 text-left",
                 canOpen ? "cursor-pointer hover:-translate-y-0.5 hover:shadow-md" : "cursor-default",
                 "transition-transform",
-                st === "now" ? "border-ink bg-[#F7FFDB]" : "border-line bg-white",
+                st === "now" ? "border-fg bg-green-soft" : "border-line bg-surface",
                 st === "done" && "opacity-60",
               )}
             >
               <span className="flex w-full items-center justify-between">
                 <span className="font-display text-xl font-extrabold">{p.label}</span>
-                <Badge tone={st === "now" ? "lime" : st === "done" ? "neutral" : "info"} mono>
+                <Badge tone={st === "now" ? "signal" : st === "done" ? "neutral" : "info"} mono>
                   {st === "now" ? "Now" : st === "done" ? "Done" : "Next"}
                 </Badge>
               </span>
-              <span className="font-mono text-[13px] font-semibold text-cobalt">{p.years.toFixed(p.years < 1 ? 2 : 1)} yrs</span>
+              <span className="font-mono text-[13px] font-semibold text-link">{p.years.toFixed(p.years < 1 ? 2 : 1)} yrs</span>
               <span className="font-mono text-xs leading-normal text-muted">
                 {fmtMonthYear(p.start)} → {fmtMonthYear(p.end)}
               </span>
-              <span className="text-[13px] leading-normal text-[#3A4150]">{p.sub ? `${p.sub} · ` : ""}{LIFE_SECTOR[p.lord]}</span>
+              <span className="text-[13px] leading-normal text-fg-2">{p.sub ? `${p.sub} · ` : ""}{LIFE_SECTOR[p.lord]}</span>
             </button>
           );
         })}
